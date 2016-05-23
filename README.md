@@ -18,4 +18,6 @@ docker run -d -p 49001:8080 -v $PWD/jenkins:/var/jenkins_home -v /var/run/docker
 
 ## Install Docker Build and Publish Plugin
 
+Enter repository name (i.e. yongshin/docker-node-app), docker registry (i.e. https://index.docker.io/v1/), and registry credentials
+
 https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Build+and+Publish+plugin
