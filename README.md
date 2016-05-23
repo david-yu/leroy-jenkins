@@ -11,5 +11,5 @@ docker build -t yongshin/jenkins-docker .
 Start Jenkins by mapping workspace, expose Docker socket to Jenkins Container, and mapping docker binary:
 
 ```
-docker run -d -p 49001:8080 -v $PWD/jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -t jenkinsci/jenkins
+docker run -d -p 49001:8080 -v $PWD/jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -t yongshin/jenkins-docker
 ```
