@@ -1,6 +1,6 @@
 # jenkins-docker
 
-A project to build docker images using Jenkins within a docker container. docker-compose is not working in thie setup. Reference: http://container-solutions.com/running-docker-in-jenkins-in-docker/
+A project to build docker images using Jenkins within a docker container. docker-compose is not working in thie setup. Reference: http://container-solutions.com/running-docker-in-jenkins-in-docker/ and https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/. 
 
 ## Build application using Jenkins
 
