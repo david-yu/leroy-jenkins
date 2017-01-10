@@ -27,7 +27,7 @@ mkdir Jenkins
 
 #### Create node label on Docker Engine
 ```
-
+docker node update --label-add type=jenkins ${WORKER_NODE_NAME}
 ```
 
 ## Build application using Jenkins
