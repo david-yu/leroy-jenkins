@@ -1,6 +1,6 @@
 # leroy-jenkins
 
-The greatest jenkins to rule them all.
+The greatest Jenkins to rule them all!
 
 ## Build application using Jenkins
 
