@@ -16,6 +16,9 @@ chmod +x /usr/local/bin/docker-compose
 ```
 
 #### Join Node to Docker Swarm
+```
+docker swarm join --token ${SWARM_TOKEN} ${SWARM_MANAGER}:2377
+```
 
 ## Build application using Jenkins
 
@@ -31,5 +34,6 @@ docker build -t yongshin/leroy-jenkins .
 docker service create --name leroy-jenkins --publish 8080:8080 \
 --mount type=bind,source=$PWD/jenkins,destination=/var/jenkins_home \
 --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
---mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose leroy-jenkins
+--mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose \
+--constraint 'node.role == worker' leroy-jenkins 
 ```
