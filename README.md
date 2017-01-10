@@ -45,7 +45,7 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
   --mount type=bind,source=$PWD/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose \
-  --constraint 'node.labels.nodeType == jenkins' yongshin/leroy-jenkins
+  --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
 ```
 
 #### Copy password from jenkins folder
