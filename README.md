@@ -20,9 +20,14 @@ chmod +x /usr/local/bin/docker-compose
 docker swarm join --token ${SWARM_TOKEN} ${SWARM_MANAGER}:2377
 ```
 
-### Create Jenkins folder on node
+#### Create Jenkins directory on node
 ```
 mkdir Jenkins
+```
+
+#### Create node label on Docker Engine
+```
+
 ```
 
 ## Build application using Jenkins
@@ -40,7 +45,7 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
   --mount type=bind,source=$PWD/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose \
-  --constraint 'node.role == worker' yongshin/leroy-jenkins
+  --constraint 'node.labels.nodeType == jenkins' yongshin/leroy-jenkins
 ```
 
 #### Copy password from jenkins folder
