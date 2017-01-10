@@ -22,7 +22,7 @@ docker swarm join --token ${SWARM_TOKEN} ${SWARM_MANAGER}:2377
 
 #### Create Jenkins directory on node
 ```
-mkdir Jenkins
+mkdir jenkins
 ```
 
 #### Create node label on Docker Engine
@@ -52,4 +52,15 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
 
 ```
 sudo more jenkins/secrets/initialAdminPassword
+```
+
+#### Create 'docker build and push' Free-Style Jenkins Job
+
+```
+#!/bin/bash export DTR_IPADDR=172.28.128.10 export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=docker123
+docker build -t ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} .
+docker tag ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} ${DTR_IPADDR}/engineering/docker-node-app:latest
+docker login -u admin -p admin ${DTR_IPADDR} \
+docker push ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER}
+docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 ```
