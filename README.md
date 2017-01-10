@@ -28,5 +28,8 @@ docker build -t yongshin/leroy-jenkins .
 #### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
 
 ```
-docker service create -d -p 8080:8080 -v $PWD/jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /usr/local/bin/docker-compose:/usr/local/bin/docker-compose leroy-jenkins
+docker service create --name leroy-jenkins --publish 8080:8080 \
+--mount type=bind,source=$PWD/jenkins,destination=/var/jenkins_home \
+--mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
+--mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose leroy-jenkins
 ```
