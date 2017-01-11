@@ -53,6 +53,7 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
   --mount type=bind,source=$PWD/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose \
+  --mount type=bind,source=/home/ubuntu/ucp-admin-bundle,destination=/home/jenkins/ucp-admin-bundle \
   --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
 ```
 
@@ -80,7 +81,7 @@ docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 #!/bin/bash
 export DTR_IPADDR=172.28.128.10
 export DOCKER_TLS_VERIFY=1
-export DOCKER_CERT_PATH="/home/vagrant/ucp-bundle"
+export DOCKER_CERT_PATH="/home/jenkins/ucp-admin-bundle"
 export DOCKER_HOST=tcp://172.28.128.12:443
 docker-compose stop
 docker login -u admin -p admin ${DTR_IPADDR}
