@@ -20,14 +20,22 @@ chmod +x /usr/local/bin/docker-compose
 docker swarm join --token ${SWARM_TOKEN} ${SWARM_MANAGER}:2377
 ```
 
-#### Create Jenkins directory on node
+#### Create Jenkins directory on Node
 ```
 mkdir jenkins
 ```
 
-#### Create node label on Docker Engine
+#### Create Node label on Docker Engine
 ```
 docker node update --label-add type=jenkins ${WORKER_NODE_NAME}
+```
+
+#### Install DTR CA on Node (if using self-signed certs)
+```
+export DTR_IPADDR=$(cat /vagrant/dtr-vancouver-node1-ipaddr)
+openssl s_client -connect ${DTR_IPADDR}:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM | sudo tee /usr/local/share/ca-certificates/${DTR_IPADDR}.crt
+sudo update-ca-certificates
+sudo service docker restart
 ```
 
 ## Build application using Jenkins
@@ -58,10 +66,25 @@ sudo more jenkins/secrets/initialAdminPassword
 
 ```
 #!/bin/bash
-export DTR_IPADDR=172.28.128.10 export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=docker123
+export DTR_IPADDR=172.28.128.10
+export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=docker123
 docker build -t ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} .
 docker tag ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} ${DTR_IPADDR}/engineering/docker-node-app:latest
-docker login -u admin -p dockeradmin ${DTR_IPADDR} 
+docker login -u admin -p dockeradmin ${DTR_IPADDR}
 docker push ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER}
 docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
+```
+
+#### Create 'docker deploy' Free-Style Jenkins Job
+```
+export DTR_IPADDR=172.28.128.10
+export DOCKER_TLS_VERIFY=1
+export DOCKER_CERT_PATH="/home/vagrant/ucp-bundle"
+export DOCKER_HOST=tcp://172.28.128.12:443
+docker-compose stop
+docker login -u admin -p admin ${DTR_IPADDR}
+docker pull ${DTR_IPADDR}/engineering/docker-node-app
+docker pull clusterhq/mongodb
+docker-compose -p docker-node-app up -d
+docker-compose scale app=5
 ```
