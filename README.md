@@ -77,6 +77,7 @@ docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 
 #### Create 'docker deploy' Free-Style Jenkins Job
 ```
+#!/bin/bash
 export DTR_IPADDR=172.28.128.10
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/vagrant/ucp-bundle"
