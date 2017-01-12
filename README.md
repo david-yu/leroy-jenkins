@@ -63,10 +63,11 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
 sudo more jenkins/secrets/initialAdminPassword
 ```
 
-#### Create repo in DTR to push images to `docker-node-app`. Otherwise authentication to DTR will fail on build.
+#### Create repo in DTR to push images. Otherwise authentication to DTR will fail on build.
 ![Repo](repo.png?raw=true)
 
 #### Create 'docker build and push' Free-Style Jenkins Job
+![Jenkins Job](jenkins-create-job.png?raw=true)
 
 #### Source Code Management -> Git - set repository to the repository to check out source
 
