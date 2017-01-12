@@ -1,6 +1,6 @@
 # leroy-jenkins
 
-The greatest Jenkins to rule them all!
+The greatest Jenkins to rule them all! In more seriousness, this is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker DataCenter for Engine 1.13. 
 
 ## Provision node to run Jenkins on
 
