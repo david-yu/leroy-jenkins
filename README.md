@@ -40,6 +40,8 @@ sudo service docker restart
 
 ## Build application using Jenkins
 
+### Setup Jenkins
+
 #### Build from Dockerfile on Github (Optional, otherwise just pull from DockerHub)
 ```
 docker build -t yongshin/leroy-jenkins .
@@ -60,6 +62,8 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
 ```
 sudo more jenkins/secrets/initialAdminPassword
 ```
+
+### Setup Docker Build and Push to DTR Jenkins Job
 
 #### Create repo in DTR to push images. Otherwise authentication to DTR will fail on build.
 ![Repo](images/repo.png?raw=true)
@@ -89,7 +93,9 @@ docker push ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER}
 docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 ```
 
-#### Create 'docker deploy' Free-Style Jenkins Job
+### Setup Docker Deploy Jenkins Job
+
+#### Create Docker Deploy Application Free-Style Jenkins Job
 ![Docker Create Job](images/jenkins-create-job-deploy.png?raw=true)
 
 #### Source Code Management -> Git - set repository to the repository to check out source
