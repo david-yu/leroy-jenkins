@@ -50,14 +50,14 @@ docker build -t yongshin/leroy-jenkins .
 
 ```
 docker service create --name leroy-jenkins --publish 8080:8080 \
-  --mount type=bind,source=$PWD/jenkins,destination=/var/jenkins_home \
+  --mount type=bind,source=/home/ubuntu/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose \
-  --mount type=bind,source=/home/ubuntu/ucp-admin-bundle,destination=/home/jenkins/ucp-admin-bundle \
+  --mount type=bind,source=/home/ubuntu/ucp-admin-bundle,destination=/home/jenkins/ucp-bundle-admin \
   --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
 ```
 
-#### Copy password from jenkins folder
+#### Copy password from jenkins folder on Node
 
 ```
 sudo more jenkins/secrets/initialAdminPassword
