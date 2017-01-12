@@ -63,8 +63,22 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
 sudo more jenkins/secrets/initialAdminPassword
 ```
 
+#### Create repo in DTR to push images to `docker-node-app`. Otherwise authentication to DTR will fail on build.
+
 #### Create 'docker build and push' Free-Style Jenkins Job
 
+#### Source Code Management -> Git - set repository to the repository to check out source
+
+```
+https://github.com/yongshin/docker-node-app.git
+```
+
+#### Set Build Triggers -> Poll SCM
+```
+* * * * *
+```
+
+### Add Build Step -> Execute Shell 
 ```
 #!/bin/bash
 export DTR_IPADDR=172.28.128.10
@@ -79,10 +93,10 @@ docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 #### Create 'docker deploy' Free-Style Jenkins Job
 ```
 #!/bin/bash
-export DTR_IPADDR=172.28.128.10
+export DTR_IPADDR=172.28.128.6
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
-export DOCKER_HOST=tcp://172.28.128.12:443
+export DOCKER_HOST=tcp://172.28.128.5:443
 docker-compose stop
 docker login -u admin -p admin ${DTR_IPADDR}
 docker pull ${DTR_IPADDR}/engineering/docker-node-app
