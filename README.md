@@ -53,7 +53,7 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
   --mount type=bind,source=/home/ubuntu/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose \
-  --mount type=bind,source=/home/ubuntu/ucp-admin-bundle,destination=/home/jenkins/ucp-bundle-admin \
+  --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
   --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
 ```
 
