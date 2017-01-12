@@ -81,7 +81,7 @@ docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 #!/bin/bash
 export DTR_IPADDR=172.28.128.10
 export DOCKER_TLS_VERIFY=1
-export DOCKER_CERT_PATH="/home/jenkins/ucp-admin-bundle"
+export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
 export DOCKER_HOST=tcp://172.28.128.12:443
 docker-compose stop
 docker login -u admin -p admin ${DTR_IPADDR}
