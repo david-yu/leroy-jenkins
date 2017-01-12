@@ -93,6 +93,12 @@ docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 ```
 
 #### Create 'docker deploy' Free-Style Jenkins Job
+![Docker Create Job](images/jenkins-create-job-deploy.png?raw=true)
+
+#### Add Jenkins build trigger to run deploy after image build job is complete
+![Jenkins Build Trigger](images/jenkins-build-trigger.png?raw=true)
+
+#### Add Build Step -> Execute Shell
 ```
 #!/bin/bash
 export DTR_IPADDR=172.28.128.6
