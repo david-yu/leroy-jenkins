@@ -64,6 +64,7 @@ sudo more jenkins/secrets/initialAdminPassword
 ```
 
 #### Create repo in DTR to push images to `docker-node-app`. Otherwise authentication to DTR will fail on build.
+!(repo.png?raw=true)
 
 #### Create 'docker build and push' Free-Style Jenkins Job
 
@@ -78,7 +79,7 @@ https://github.com/yongshin/docker-node-app.git
 * * * * *
 ```
 
-### Add Build Step -> Execute Shell 
+### Add Build Step -> Execute Shell
 ```
 #!/bin/bash
 export DTR_IPADDR=172.28.128.10
