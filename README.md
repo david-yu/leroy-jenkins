@@ -40,8 +40,7 @@ sudo service docker restart
 
 ## Build application using Jenkins
 
-#### Build from latest Jenkins image from Docker Hub
-
+#### Build from Dockerfile on Github (Optional, otherwise just pull from DockerHub)
 ```
 docker build -t yongshin/leroy-jenkins .
 ```
