@@ -58,7 +58,6 @@ docker service create --name leroy-jenkins --publish 8080:8080 \
 ```
 
 #### Copy password from jenkins folder on Node
-
 ```
 sudo more jenkins/secrets/initialAdminPassword
 ```
@@ -70,7 +69,6 @@ sudo more jenkins/secrets/initialAdminPassword
 ![Jenkins Job](images/jenkins-create-job.png?raw=true)
 
 #### Source Code Management -> Git - set repository to the repository to check out source
-
 ```
 https://github.com/yongshin/docker-node-app.git
 ```
@@ -94,6 +92,11 @@ docker push ${DTR_IPADDR}/engineering/docker-node-app:latest
 
 #### Create 'docker deploy' Free-Style Jenkins Job
 ![Docker Create Job](images/jenkins-create-job-deploy.png?raw=true)
+
+#### Source Code Management -> Git - set repository to the repository to check out source
+```
+https://github.com/yongshin/docker-node-app.git
+```
 
 #### Add Jenkins build trigger to run deploy after image build job is complete
 ![Jenkins Build Trigger](images/jenkins-build-trigger.png?raw=true)
