@@ -113,7 +113,7 @@ export DTR_IPADDR=172.28.128.6
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
 export DOCKER_HOST=tcp://172.28.128.5:443
-docker login -u admin -p admin ${DTR_IPADDR}
+docker login -u admin -p dockeradmin ${DTR_IPADDR}
 docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
 if [[ "$(docker service ls --filter name=docker-node-app | awk '{print $2}' | grep docker-node-app | wc -c)" -ne 0 ]]
