@@ -1,6 +1,6 @@
 # leroy-jenkins
 
-The greatest Jenkins to rule them all! In more seriousness, this is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker DataCenter for Engine 1.13. 
+The greatest Jenkins to rule them all! In more seriousness, this is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker DataCenter for Engine 1.13.
 
 ## Provision node to run Jenkins on
 
@@ -113,10 +113,14 @@ export DTR_IPADDR=172.28.128.6
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
 export DOCKER_HOST=tcp://172.28.128.5:443
-docker-compose stop
 docker login -u admin -p admin ${DTR_IPADDR}
 docker pull ${DTR_IPADDR}/engineering/docker-node-app
 docker pull clusterhq/mongodb
-docker-compose -p docker-node-app up -d
-docker-compose scale app=5
+if [[ "$(docker service ls --filter name=docker-node-app | awk '{print $2}' | grep docker-node-app | wc -c)" -ne 0 ]]
+then
+  docker service update --image ${DTR_IPADDR}/engineering/docker-node-app:latest docker-node-app
+else
+  docker service create --replicas 1 -p 27017:27017 --network app-network  --mount type=volume,destination=/data/db --constraint 'node.labels.workload == app' --name mongodb clusterhq/mongodb
+  docker service create --replicas 3 -p 4000 -e MONGODB_SERVICE_SERVICE_HOST=mongodb --network app-network --network ucp-hrm --constraint 'node.labels.workload == app' --label com.docker.ucp.mesh.http.4000=external_route=http://test.local,internal_port=4000 --name docker-node-app --with-registry-auth ${DTR_IPADDR}/engineering/docker-node-app:latest
+fi
 ```
