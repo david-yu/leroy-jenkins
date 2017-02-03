@@ -43,7 +43,9 @@ docker build -t yongshin/leroy-jenkins .
 
 #### Download UCP Client bundle from ucp-bundle-admin and unzip in `ucp-bundle-admin` folder
 ```
-unzip ucp-bundle-admin.zip
+unzip ucp-bundle-admin.zip -d ucp-bundle-admin
+cd ucp-bundle-admin
+source env.sh
 ```
 
 #### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
