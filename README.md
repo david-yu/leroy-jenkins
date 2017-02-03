@@ -9,12 +9,6 @@ The greatest Jenkins to rule them all! In more seriousness, this is a set of ins
 curl -fsSL https://packages.docker.com/1.13/install.sh | repo=testing sh
 ```
 
-#### Install Docker Compose on Node
-```
-curl -L https://github.com/docker/compose/releases/download/1.10.0-rc1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-```
-
 #### Join Node to Docker Swarm
 ```
 docker swarm join --token ${SWARM_TOKEN} ${SWARM_MANAGER}:2377
@@ -47,13 +41,17 @@ sudo service docker restart
 docker build -t yongshin/leroy-jenkins .
 ```
 
+#### Download UCP Client bundle from ucp-bundle-admin
+```
+unzip ucp-bundle-admin.zip
+```
+
 #### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
 
 ```
 docker service create --name leroy-jenkins --publish 8080:8080 \
   --mount type=bind,source=/home/ubuntu/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
-  --mount type=bind,source=/usr/local/bin/docker-compose,destination=/usr/local/bin/docker-compose \
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
   --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
 ```
