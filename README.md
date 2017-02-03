@@ -51,10 +51,11 @@ source env.sh
 #### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
 
 ```
-docker service create --name leroy-jenkins --publish 8080:8080 \
+docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080 \
   --mount type=bind,source=/home/ubuntu/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
+  --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
   --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
 ```
 
