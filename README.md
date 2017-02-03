@@ -41,7 +41,7 @@ sudo service docker restart
 docker build -t yongshin/leroy-jenkins .
 ```
 
-#### Download UCP Client bundle from ucp-bundle-admin
+#### Download UCP Client bundle from ucp-bundle-admin and unzip in `ucp-bundle-admin` folder
 ```
 unzip ucp-bundle-admin.zip
 ```
