@@ -48,6 +48,20 @@ cd ucp-bundle-admin
 source env.sh
 ```
 
+#### Create notary `/home/ubuntu/jenkins/.notary/config.json` by pointing to certs from UCP Client Bundle
+
+```
+{
+  "trust_dir" : "~/.docker/trust",
+  "remote_server": {
+    "url": "https://172.28.128.4/",
+    "root_ca": "/home/jenkins/ucp-bundle-admin/ca.pem",
+    "tls_client_cert": "/home/jenkins/ucp-bundle-admin/cert.pem",
+    "tls_client_key": "/home/jenkins/ucp-bundle-admin/key.pem"
+  },
+}
+```
+
 #### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
 
 ```
