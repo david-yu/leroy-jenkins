@@ -79,7 +79,7 @@ sudo more jenkins/secrets/initialAdminPassword
 ![Repo](images/repo.png?raw=true)
 
 #### Initialize notary on repository
-
+Run `notary init` on the newly created repo `docker-node-app`
 ```
 ubuntu@worker-node2:~$ docker ps
 CONTAINER ID        IMAGE                                                                                            COMMAND                  CREATED             STATUS              PORTS                     NAMES
@@ -88,17 +88,17 @@ CONTAINER ID        IMAGE                                                       
 3bcfa136e99b        docker/ucp-agent:2.1.0                                                                           "/bin/ucp-agent proxy"   24 hours ago        Up 23 hours         0.0.0.0:12376->2376/tcp   ucp-proxy
 
 ubuntu@worker-node2:~$ docker exec -it 09a07f72010d bash
-root@09a07f72010d:/# notary -s https://172.28.128.4 init 172.28.128.4/engineering/redis
+root@09a07f72010d:/# notary -s https://172.28.128.4 init 172.28.128.4/engineering/docker-node-app
 Root key found, using: c47333b8b15fe43a6abc59dcb29f4e60dee1807919dfc05f6e57dbfc57553d88
 Enter passphrase for root key with ID c47333b:
-Enter passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/redis):
-Repeat passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/redis):
-Enter passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/redis):
-Repeat passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/redis):
+Enter passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/docker-node-app):
+Repeat passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/docker-node-app):
+Enter passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/docker-node-app):
+Repeat passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/docker-node-app):
 Enter username: admin
 Enter password:
 
-root@09a07f72010d:/# 
+root@09a07f72010d:/#
 ```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
