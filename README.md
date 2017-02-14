@@ -68,6 +68,7 @@ Run inside of Jenkins container
 ```
 
 #### Copy password from jenkins folder on Node
+Run inside of node
 ```
 sudo more jenkins/secrets/initialAdminPassword
 ```
