@@ -62,7 +62,7 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
 ```
 
 #### Have Jenkins trust the DTR CA
-Run this inside of Jenkins container, found here: [trust-dtr.sh](https://github.com/yongshin/vagrant-vancouver/blob/master/scripts/trust-dtr.sh)
+Run this inside of Jenkins container, mounted from a volume as shown above, the contents of the file are here: [trust-dtr.sh](https://github.com/yongshin/vagrant-vancouver/blob/master/scripts/trust-dtr.sh)
 ```
 ./scripts/trust-dtr.sh
 ```
@@ -77,6 +77,29 @@ sudo more jenkins/secrets/initialAdminPassword
 
 #### Create repo in DTR to push images. Otherwise authentication to DTR will fail on build.
 ![Repo](images/repo.png?raw=true)
+
+#### Initialize notary on repository
+
+```
+ubuntu@worker-node2:~$ docker ps
+CONTAINER ID        IMAGE                                                                                            COMMAND                  CREATED             STATUS              PORTS                     NAMES
+09a07f72010d        yongshin/leroy-jenkins@sha256:6bc8aeff905bb504de40ac9da15b5842108c01ab02e8c4b56064902af376b473   "/bin/tini -- /usr..."   22 hours ago        Up 22 hours         8080/tcp, 50000/tcp       leroy-jenkins.1.vuiocbnlz8cvi9925vsy54i5q
+20b8b64d6a3f        docker/ucp-agent@sha256:a428de44a9059f31a59237a5881c2d2cffa93757d99026156e4ea544577ab7f3         "/bin/ucp-agent agent"   23 hours ago        Up 23 hours         2376/tcp                  ucp-agent.mkf4p9818iydomuokv9o8ztyv.zmh24nsty2epkne4dukk3m0di
+3bcfa136e99b        docker/ucp-agent:2.1.0                                                                           "/bin/ucp-agent proxy"   24 hours ago        Up 23 hours         0.0.0.0:12376->2376/tcp   ucp-proxy
+
+ubuntu@worker-node2:~$ docker exec -it 09a07f72010d bash
+root@09a07f72010d:/# notary -s https://172.28.128.4 init 172.28.128.4/engineering/redis
+Root key found, using: c47333b8b15fe43a6abc59dcb29f4e60dee1807919dfc05f6e57dbfc57553d88
+Enter passphrase for root key with ID c47333b:
+Enter passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/redis):
+Repeat passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/redis):
+Enter passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/redis):
+Repeat passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/redis):
+Enter username: admin
+Enter password:
+
+root@09a07f72010d:/# 
+```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
 ![Jenkins Job](images/jenkins-create-job.png?raw=true)
