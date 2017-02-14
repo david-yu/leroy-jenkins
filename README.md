@@ -1,6 +1,6 @@
 # leroy-jenkins
 
-The greatest Jenkins to rule them all! In more seriousness, this is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker DataCenter for Engine 1.13.
+This repo contains is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker DataCenter for Engine 1.13.
 
 ## Provision node to run Jenkins on
 
@@ -24,7 +24,7 @@ mkdir jenkins
 docker node update --label-add type=jenkins ${WORKER_NODE_NAME}
 ```
 
-#### Install DTR CA on Node (if using self-signed certs)
+#### Install DTR CA on Node (if using self-signed certs) as well as all Nodes inside of UCP Swarm
 ```
 export DTR_IPADDR=$(cat /vagrant/dtr-vancouver-node1-ipaddr)
 openssl s_client -connect ${DTR_IPADDR}:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM | sudo tee /usr/local/share/ca-certificates/${DTR_IPADDR}.crt
@@ -43,23 +43,9 @@ docker build -t yongshin/leroy-jenkins .
 
 #### Download UCP Client bundle from ucp-bundle-admin and unzip in `ucp-bundle-admin` folder
 ```
-unzip ucp-bundle-admin.zip -d ucp-bundle-admin
+cp -r /vagrant/ucp-bundle-admin/ .
 cd ucp-bundle-admin
 source env.sh
-```
-
-#### Create notary `/home/ubuntu/jenkins/.notary/config.json` by pointing to certs from UCP Client Bundle
-
-```
-{
-  "trust_dir" : "~/.docker/trust",
-  "remote_server": {
-    "url": "https://172.28.128.4/",
-    "root_ca": "/home/jenkins/ucp-bundle-admin/ca.pem",
-    "tls_client_cert": "/home/jenkins/ucp-bundle-admin/cert.pem",
-    "tls_client_key": "/home/jenkins/ucp-bundle-admin/key.pem"
-  },
-}
 ```
 
 #### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
@@ -69,8 +55,16 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --mount type=bind,source=/home/ubuntu/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
+  --mount type=bind,source=/home/ubuntu/scripts,destination=/home/jenkins/scripts \
+  --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
   --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
   --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
+```
+
+#### Have Jenkins trust the DTR CA
+Run inside of Jenkins container
+```
+./scripts/trust-dtr-ca.sh
 ```
 
 #### Copy password from jenkins folder on Node
