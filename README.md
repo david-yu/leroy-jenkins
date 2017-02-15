@@ -104,6 +104,7 @@ root@09a07f72010d:/#
 #### Add delegation for targets/releases
 ```
 root@6ddfb62a5b8d:/home/jenkins/ucp-bundle-admin# notary -s https://172.28.128.4 delegation add -p 172.28.128.4/engineering/docker-node-app targets/releases --all-paths cert.pem --debug
+
 DEBU[0000] Configuration file not found, using defaults
 DEBU[0000] Using the following trust directory: /root/.notary
 DEBU[0000] No yubikey found, using alternative key storage: no library found
@@ -111,9 +112,7 @@ DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-no
 DEBU[0000] Adding delegation "targets/releases" with threshold 1, and 1 keys\n
 DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
 DEBU[0000] Adding [] paths to delegation targets/releases\n
-
 Addition of delegation role targets/releases with keys [8f3d39a5265a1245a958dd3123a008588d1ea93684166ec0019cb312346370cf], with paths ["" <all paths>], to repository "172.28.128.4/engineering/docker-node-app" staged for next publish.
-
 DEBU[0000] No yubikey found, using alternative key storage: no library found
 Auto-publishing changes to 172.28.128.4/engineering/docker-node-app
 DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
