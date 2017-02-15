@@ -24,7 +24,7 @@ mkdir jenkins
 docker node update --label-add type=jenkins ${WORKER_NODE_NAME}
 ```
 
-#### Install DTR CA on Node (if using self-signed certs) as well as all Nodes inside of UCP Swarm
+#### Install DTR CA on Node as well as all Nodes inside of UCP Swarm (if using self-signed certs)
 ```
 export DTR_IPADDR=$(cat /vagrant/dtr-vancouver-node1-ipaddr)
 openssl s_client -connect ${DTR_IPADDR}:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM | sudo tee /usr/local/share/ca-certificates/${DTR_IPADDR}.crt
@@ -61,7 +61,7 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
 ```
 
-#### Have Jenkins trust the DTR CA
+#### Have Jenkins trust the DTR CA (if using self-signed certs)
 Run this inside of Jenkins container, mounted from a volume as shown above, the contents of the file are here: [trust-dtr.sh](https://github.com/yongshin/vagrant-vancouver/blob/master/scripts/trust-dtr.sh)
 ```
 ./scripts/trust-dtr.sh
@@ -99,6 +99,76 @@ Enter username: admin
 Enter password:
 
 root@09a07f72010d:/#
+```
+
+#### Add delegation for targets/releases
+```
+root@6ddfb62a5b8d:/home/jenkins/ucp-bundle-admin# notary -s https://172.28.128.4 delegation add -p 172.28.128.4/engineering/docker-node-app targets/releases --all-paths cert.pem --debug
+DEBU[0000] Configuration file not found, using defaults
+DEBU[0000] Using the following trust directory: /root/.notary
+DEBU[0000] No yubikey found, using alternative key storage: no library found
+DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
+DEBU[0000] Adding delegation "targets/releases" with threshold 1, and 1 keys\n
+DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
+DEBU[0000] Adding [] paths to delegation targets/releases\n
+
+Addition of delegation role targets/releases with keys [8f3d39a5265a1245a958dd3123a008588d1ea93684166ec0019cb312346370cf], with paths ["" <all paths>], to repository "172.28.128.4/engineering/docker-node-app" staged for next publish.
+
+DEBU[0000] No yubikey found, using alternative key storage: no library found
+Auto-publishing changes to 172.28.128.4/engineering/docker-node-app
+DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
+DEBU[0000] entered ValidateRoot with dns: 172.28.128.4/engineering/docker-node-app
+DEBU[0000] found the following root keys: [dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1]
+DEBU[0000] found 1 valid leaf certificates for 172.28.128.4/engineering/docker-node-app: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000] found 1 leaf certs, of which 1 are valid leaf certs for 172.28.128.4/engineering/docker-node-app
+DEBU[0000] checking root against trust_pinning config%!(EXTRA string=172.28.128.4/engineering/docker-node-app)
+DEBU[0000] checking trust-pinning for cert: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000]  role has key IDs: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000] verifying signature for key ID: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000] root validation succeeded for 172.28.128.4/engineering/docker-node-app
+DEBU[0000] entered ValidateRoot with dns: 172.28.128.4/engineering/docker-node-app
+DEBU[0000] found the following root keys: [dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1]
+DEBU[0000] found 1 valid leaf certificates for 172.28.128.4/engineering/docker-node-app: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000] found 1 leaf certs, of which 1 are valid leaf certs for 172.28.128.4/engineering/docker-node-app
+DEBU[0000] checking root against trust_pinning config%!(EXTRA string=172.28.128.4/engineering/docker-node-app)
+DEBU[0000] checking trust-pinning for cert: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000]  role has key IDs: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000] verifying signature for key ID: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0000] root validation succeeded for 172.28.128.4/engineering/docker-node-app
+Enter username: admin
+Enter password:
+DEBU[0009] received HTTP status 404 when requesting root.
+DEBU[0009] Loading trusted collection.                  
+DEBU[0009] entered ValidateRoot with dns: 172.28.128.4/engineering/docker-node-app
+DEBU[0009] found the following root keys: [dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1]
+DEBU[0009] found 1 valid leaf certificates for 172.28.128.4/engineering/docker-node-app: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0009] found 1 leaf certs, of which 1 are valid leaf certs for 172.28.128.4/engineering/docker-node-app
+DEBU[0009] checking root against trust_pinning config%!(EXTRA string=172.28.128.4/engineering/docker-node-app)
+DEBU[0009] checking trust-pinning for cert: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0009]  role has key IDs: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0009] verifying signature for key ID: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
+DEBU[0009] root validation succeeded for 172.28.128.4/engineering/docker-node-app
+DEBU[0009] targets role has key IDs: 6f2823e832eeb072559b88bac12cf877ef7c75e7d002648d42d846daa1b60ed1
+DEBU[0009] verifying signature for key ID: 6f2823e832eeb072559b88bac12cf877ef7c75e7d002648d42d846daa1b60ed1
+DEBU[0009] snapshot role has key IDs: 80b729fecdccdd31172d5c0b389b510c42367a291fcc4b0ff306833a2e234a3d
+DEBU[0009] verifying signature for key ID: 80b729fecdccdd31172d5c0b389b510c42367a291fcc4b0ff306833a2e234a3d
+DEBU[0009] No yubikey found, using alternative key storage: no library found
+Enter passphrase for targets key with ID 6f2823e:
+DEBU[0013] role targets/releases with no Paths will never be able to publish content until one or more are added
+DEBU[0013] No yubikey found, using alternative key storage: no library found
+DEBU[0013] No yubikey found, using alternative key storage: no library found
+DEBU[0013] No yubikey found, using alternative key storage: no library found
+DEBU[0013] applied 2 change(s)                          
+DEBU[0013] sign targets called for role targets         
+DEBU[0013] sign called with 1/1 required keys           
+DEBU[0013] No yubikey found, using alternative key storage: no library found
+DEBU[0013] sign called with 0/0 required keys           
+DEBU[0013] signing snapshot...                          
+DEBU[0013] sign called with 1/1 required keys           
+DEBU[0013] No yubikey found, using alternative key storage: no library found
+Enter passphrase for snapshot key with ID 80b729f:
+DEBU[0016] sign called with 0/0 required keys           
+Successfully published changes for repository 172.28.128.4/engineering/docker-node-app
 ```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
