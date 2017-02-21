@@ -48,7 +48,7 @@ cd ucp-bundle-admin
 source env.sh
 ```
 
-#### Copy scripts folder that include `trust-dtr.sh` script, provided by [vagrant-vancouver](https://github.com/yongshin/vagrant-vancouver)
+#### Copy scripts folder that includes `trust-dtr.sh` script, provided by [vagrant-vancouver](https://github.com/yongshin/vagrant-vancouver)
 ```
 cp -r /vagrant/scripts/ /home/ubuntu/scripts
 ```
