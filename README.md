@@ -59,7 +59,7 @@ cp -r /vagrant/scripts/ /home/ubuntu/scripts
 docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080 \
   --mount type=bind,source=/home/ubuntu/jenkins,destination=/var/jenkins_home \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
-  --mount type=bind,source=/usr/bin/docker,destination=/usr/bin/docker \ 
+  --mount type=bind,source=/usr/bin/docker,destination=/usr/bin/docker \
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
   --mount type=bind,source=/home/ubuntu/scripts,destination=/home/jenkins/scripts \
   --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
@@ -88,6 +88,7 @@ sudo more jenkins/secrets/initialAdminPassword
 #### Initialize notary on repository
 Run `notary key import` and `notary init` on the newly created repo `docker-node-app` within jenkins container
 ```
+root@09a07f72010d:/# sudo su - jenkins
 root@09a07f72010d:/# notary -d /home/jenkins/.docker/trust key import /home/jenkins/ucp-bundle-admin/key.pem
 Enter passphrase for new delegation key with ID 4906f54 (tuf_keys):
 Repeat passphrase for new delegation key with ID 4906f54 (tuf_keys):
@@ -100,17 +101,27 @@ Enter passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/
 Repeat passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/docker-node-app):
 Enter username: admin
 Enter password:
-root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust key rotate 172.28.128.11/engineering/docker-node-app snapshot -r
-root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust publish 172.28.128.11/engineering/docker-node-app
+```
+
+```
+root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust key rotate \
+  172.28.128.11/engineering/docker-node-app snapshot -r
+
+```
+root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust publish \
+  172.28.128.11/engineering/docker-node-app
 ```
 
 #### Add delegation for targets/releases
 ```
-root@6ddfb62a5b8d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust delegation add 172.28.128.11/engineering/docker-node-app targets/releases --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
+root@6ddfb62a5b8d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust delegation add \
+  172.28.128.11/engineering/docker-node-app targets/releases --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust delegation add 172.28.128.11/engineering/docker-node-app targets/jenkins --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
+root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust delegation add \   
+  172.28.128.11/engineering/docker-node-app targets/jenkins --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust publish 172.28.128.11/engineering/docker-node-app
+root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust publish \    
+  172.28.128.11/engineering/docker-node-app
 ```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
