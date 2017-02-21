@@ -87,10 +87,10 @@ sudo more jenkins/secrets/initialAdminPassword
 #### Initialize notary on repository
 Run `notary key import` and `notary init` on the newly created repo `docker-node-app` within jenkins container
 ```
-root@09a07f72010d:/# notary key import /home/jenkins/ucp-bundle-admin/key.pem
+root@09a07f72010d:/# notary -d /home/jenkins/.docker/trust key import /home/jenkins/ucp-bundle-admin/key.pem
 Enter passphrase for new delegation key with ID 4906f54 (tuf_keys):
 Repeat passphrase for new delegation key with ID 4906f54 (tuf_keys):
-root@09a07f72010d:/# notary -s https://172.28.128.11 init 172.28.128.11/engineering/docker-node-app
+root@09a07f72010d:/# notary -d /home/jenkins/.docker/trust -s https://172.28.128.11 init 172.28.128.11/engineering/docker-node-app
 Root key found, using: c47333b8b15fe43a6abc59dcb29f4e60dee1807919dfc05f6e57dbfc57553d88
 Enter passphrase for root key with ID c47333b:
 Enter passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/docker-node-app):
@@ -99,77 +99,17 @@ Enter passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/
 Repeat passphrase for new snapshot key with ID 16827df (172.28.128.4/engineering/docker-node-app):
 Enter username: admin
 Enter password:
-
-root@09a07f72010d:/#
+root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust key rotate 172.28.128.11/engineering/docker-node-app snapshot -r
+root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust publish 172.28.128.11/engineering/docker-node-app
 ```
 
 #### Add delegation for targets/releases
 ```
-root@6ddfb62a5b8d:/home/jenkins/ucp-bundle-admin# notary -s https://172.28.128.4 delegation add -p 172.28.128.4/engineering/docker-node-app targets/releases --all-paths cert.pem --debug
+root@6ddfb62a5b8d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust delegation add 172.28.128.11/engineering/docker-node-app targets/releases --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-DEBU[0000] Configuration file not found, using defaults
-DEBU[0000] Using the following trust directory: /root/.notary
-DEBU[0000] No yubikey found, using alternative key storage: no library found
-DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
-DEBU[0000] Adding delegation "targets/releases" with threshold 1, and 1 keys\n
-DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
-DEBU[0000] Adding [] paths to delegation targets/releases\n
-Addition of delegation role targets/releases with keys [8f3d39a5265a1245a958dd3123a008588d1ea93684166ec0019cb312346370cf], with paths ["" <all paths>], to repository "172.28.128.4/engineering/docker-node-app" staged for next publish.
-DEBU[0000] No yubikey found, using alternative key storage: no library found
-Auto-publishing changes to 172.28.128.4/engineering/docker-node-app
-DEBU[0000] Making dir path: /root/.notary/tuf/172.28.128.4/engineering/docker-node-app/changelist
-DEBU[0000] entered ValidateRoot with dns: 172.28.128.4/engineering/docker-node-app
-DEBU[0000] found the following root keys: [dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1]
-DEBU[0000] found 1 valid leaf certificates for 172.28.128.4/engineering/docker-node-app: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000] found 1 leaf certs, of which 1 are valid leaf certs for 172.28.128.4/engineering/docker-node-app
-DEBU[0000] checking root against trust_pinning config%!(EXTRA string=172.28.128.4/engineering/docker-node-app)
-DEBU[0000] checking trust-pinning for cert: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000]  role has key IDs: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000] verifying signature for key ID: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000] root validation succeeded for 172.28.128.4/engineering/docker-node-app
-DEBU[0000] entered ValidateRoot with dns: 172.28.128.4/engineering/docker-node-app
-DEBU[0000] found the following root keys: [dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1]
-DEBU[0000] found 1 valid leaf certificates for 172.28.128.4/engineering/docker-node-app: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000] found 1 leaf certs, of which 1 are valid leaf certs for 172.28.128.4/engineering/docker-node-app
-DEBU[0000] checking root against trust_pinning config%!(EXTRA string=172.28.128.4/engineering/docker-node-app)
-DEBU[0000] checking trust-pinning for cert: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000]  role has key IDs: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000] verifying signature for key ID: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0000] root validation succeeded for 172.28.128.4/engineering/docker-node-app
-Enter username: admin
-Enter password:
-DEBU[0009] received HTTP status 404 when requesting root.
-DEBU[0009] Loading trusted collection.                  
-DEBU[0009] entered ValidateRoot with dns: 172.28.128.4/engineering/docker-node-app
-DEBU[0009] found the following root keys: [dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1]
-DEBU[0009] found 1 valid leaf certificates for 172.28.128.4/engineering/docker-node-app: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0009] found 1 leaf certs, of which 1 are valid leaf certs for 172.28.128.4/engineering/docker-node-app
-DEBU[0009] checking root against trust_pinning config%!(EXTRA string=172.28.128.4/engineering/docker-node-app)
-DEBU[0009] checking trust-pinning for cert: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0009]  role has key IDs: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0009] verifying signature for key ID: dfb9d4de98113f6e4088b9611550f0b01c84260baf51deb1dfb3b75c48bc9fa1
-DEBU[0009] root validation succeeded for 172.28.128.4/engineering/docker-node-app
-DEBU[0009] targets role has key IDs: 6f2823e832eeb072559b88bac12cf877ef7c75e7d002648d42d846daa1b60ed1
-DEBU[0009] verifying signature for key ID: 6f2823e832eeb072559b88bac12cf877ef7c75e7d002648d42d846daa1b60ed1
-DEBU[0009] snapshot role has key IDs: 80b729fecdccdd31172d5c0b389b510c42367a291fcc4b0ff306833a2e234a3d
-DEBU[0009] verifying signature for key ID: 80b729fecdccdd31172d5c0b389b510c42367a291fcc4b0ff306833a2e234a3d
-DEBU[0009] No yubikey found, using alternative key storage: no library found
-Enter passphrase for targets key with ID 6f2823e:
-DEBU[0013] role targets/releases with no Paths will never be able to publish content until one or more are added
-DEBU[0013] No yubikey found, using alternative key storage: no library found
-DEBU[0013] No yubikey found, using alternative key storage: no library found
-DEBU[0013] No yubikey found, using alternative key storage: no library found
-DEBU[0013] applied 2 change(s)                          
-DEBU[0013] sign targets called for role targets         
-DEBU[0013] sign called with 1/1 required keys           
-DEBU[0013] No yubikey found, using alternative key storage: no library found
-DEBU[0013] sign called with 0/0 required keys           
-DEBU[0013] signing snapshot...                          
-DEBU[0013] sign called with 1/1 required keys           
-DEBU[0013] No yubikey found, using alternative key storage: no library found
-Enter passphrase for snapshot key with ID 80b729f:
-DEBU[0016] sign called with 0/0 required keys           
-Successfully published changes for repository 172.28.128.4/engineering/docker-node-app
+root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust delegation add 172.28.128.11/engineering/docker-node-app targets/jenkins --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
+
+root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust publish 172.28.128.11/engineering/docker-node-app
 ```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
