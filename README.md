@@ -21,7 +21,7 @@ mkdir jenkins
 
 #### Create Node label on Docker Engine
 ```
-docker node update --label-add jenkins
+docker node update --label-add jenkins master
 ```
 
 #### Install DTR CA on Node as well as all Nodes inside of UCP Swarm (if using self-signed certs)
@@ -63,7 +63,7 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --mount type=bind,source=/home/ubuntu/scripts,destination=/home/jenkins/scripts \
   --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
   --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
-  --constraint 'node.labels.jenkins == true' yongshin/leroy-jenkins
+  --constraint 'node.labels.jenkins == master' yongshin/leroy-jenkins
 ```
 
 #### Have Jenkins trust the DTR CA (if using self-signed certs)
