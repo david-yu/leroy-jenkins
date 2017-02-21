@@ -21,7 +21,7 @@ mkdir jenkins
 
 #### Create Node label on Docker Engine
 ```
-docker node update --label-add type=jenkins ${WORKER_NODE_NAME}
+docker node update --label-add jenkins
 ```
 
 #### Install DTR CA on Node as well as all Nodes inside of UCP Swarm (if using self-signed certs)
@@ -48,6 +48,11 @@ cd ucp-bundle-admin
 source env.sh
 ```
 
+#### Copy scripts folder that include trust-dtr.sh script
+```
+cp -r /vagrant/scripts/ /home/ubuntu/scripts
+```
+
 #### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
 
 ```
@@ -58,7 +63,7 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --mount type=bind,source=/home/ubuntu/scripts,destination=/home/jenkins/scripts \
   --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
   --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
-  --constraint 'node.labels.type == jenkins' yongshin/leroy-jenkins
+  --constraint 'node.labels.jenkins == true' yongshin/leroy-jenkins
 ```
 
 #### Have Jenkins trust the DTR CA (if using self-signed certs)
@@ -186,7 +191,7 @@ https://github.com/yongshin/docker-node-app.git
 #### Add Build Step -> Execute Shell
 ```
 #!/bin/bash
-export DTR_IPADDR=172.28.128.10
+export DTR_IPADDR=172.28.128.11
 export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=docker123
 docker build -t ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} .
 docker tag ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} ${DTR_IPADDR}/engineering/docker-node-app:latest
@@ -211,18 +216,13 @@ https://github.com/yongshin/docker-node-app.git
 #### Add Build Step -> Execute Shell
 ```
 #!/bin/bash
-export DTR_IPADDR=172.28.128.6
+export DTR_IPADDR=172.28.128.11
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
 export DOCKER_HOST=tcp://172.28.128.5:443
 docker login -u admin -p dockeradmin ${DTR_IPADDR}
 docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
-if [[ "$(docker service ls --filter name=docker-node-app | awk '{print $2}' | grep docker-node-app | wc -c)" -ne 0 ]]
-then
-  docker service update --image ${DTR_IPADDR}/engineering/docker-node-app:latest docker-node-app
-else
-  docker service create --replicas 1 -p 27017:27017 --network app-network  --mount type=volume,destination=/data/db --constraint 'node.labels.workload == app' --name mongodb clusterhq/mongodb
-  docker service create --replicas 3 -p 4000 -e MONGODB_SERVICE_SERVICE_HOST=mongodb --network app-network --network ucp-hrm --constraint 'node.labels.workload == app' --label com.docker.ucp.mesh.http.4000=external_route=http://test.local,internal_port=4000 --name docker-node-app --with-registry-auth ${DTR_IPADDR}/engineering/docker-node-app:latest
-fi
+docker stack rm nodeapp
+docker stack deploy -c docker-compose.yml nodeapp
 ```
