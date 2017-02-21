@@ -69,7 +69,8 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
 #### Have Jenkins trust the DTR CA (if using self-signed certs)
 Run this inside of Jenkins container, mounted from a volume as shown above, the contents of the file are here: [trust-dtr.sh](https://github.com/yongshin/vagrant-vancouver/blob/master/scripts/trust-dtr.sh)
 ```
-./scripts/trust-dtr.sh
+export DTR_IPADDR=172.28.128.11
+./home/jenkins/scripts/trust-dtr.sh
 ```
 
 #### Copy password from jenkins folder on Node
@@ -93,7 +94,10 @@ CONTAINER ID        IMAGE                                                       
 3bcfa136e99b        docker/ucp-agent:2.1.0                                                                           "/bin/ucp-agent proxy"   24 hours ago        Up 23 hours         0.0.0.0:12376->2376/tcp   ucp-proxy
 
 ubuntu@worker-node2:~$ docker exec -it 09a07f72010d bash
-root@09a07f72010d:/# notary -s https://172.28.128.4 init 172.28.128.4/engineering/docker-node-app
+root@09a07f72010d:/# notary key import /home/jenkins/ucp-bundle-admin/key.pem
+Enter passphrase for new delegation key with ID 4906f54 (tuf_keys):
+Repeat passphrase for new delegation key with ID 4906f54 (tuf_keys):
+root@09a07f72010d:/# notary -s https://172.28.128.11 init 172.28.128.11/engineering/docker-node-app
 Root key found, using: c47333b8b15fe43a6abc59dcb29f4e60dee1807919dfc05f6e57dbfc57553d88
 Enter passphrase for root key with ID c47333b:
 Enter passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/docker-node-app):
