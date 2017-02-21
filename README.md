@@ -103,16 +103,19 @@ Enter username: admin
 Enter password:
 ```
 
+Rotate key to notary server
 ```
 root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust key rotate \
   172.28.128.11/engineering/docker-node-app snapshot -r
+```
 
+Publish changes
 ```
 root@09a07f72010d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust publish \
   172.28.128.11/engineering/docker-node-app
 ```
 
-#### Add delegation for targets/releases
+#### Add delegation for targets/releases and targets/jenkins
 ```
 root@6ddfb62a5b8d:/# notary -s https://172.28.128.11 -d /home/jenkins/.docker/trust delegation add \
   172.28.128.11/engineering/docker-node-app targets/releases --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
