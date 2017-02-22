@@ -6,7 +6,7 @@ This repo contains is a set of instructions to get you started on running Jenkin
 
 #### Install CS Engine on Node
 ```
-curl -fsSL https://packages.docker.com/1.13/install.sh | repo=testing sh
+curl -fsSL https://packages.docker.com/1.13/install.sh
 ```
 
 #### Join Node to Docker Swarm
@@ -53,7 +53,7 @@ source env.sh
 cp -r /vagrant/scripts/ /home/ubuntu/scripts
 ```
 
-#### Start Jenkins by mapping workspace, expose Docker socket and Docker compose to container:
+#### Start Jenkins by mapping the Jenkins workspace, Docker binary, Notary and exposing the Docker daemon socket to the container:
 
 ```
 docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080 \
