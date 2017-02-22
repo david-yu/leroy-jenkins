@@ -6,7 +6,7 @@ This repo contains is a set of instructions to get you started on running Jenkin
 
 #### Install CS Engine on Node
 ```
-curl -fsSL https://packages.docker.com/1.13/install.sh
+curl -fsSL https://packages.docker.com/1.13/install.sh | sh
 ```
 
 #### Join Node to Docker Swarm
