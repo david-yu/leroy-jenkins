@@ -115,19 +115,19 @@ root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28
 
 #### Publish changes
 ```
-root@09a07f72010d:/# notary -s https://172.28.128.11 -d /var/jenkins_home/.docker/trust publish \
+root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust publish -s https://172.28.128.11  \
   172.28.128.11/engineering/docker-node-app
 ```
 
 #### Add delegation for targets/releases and targets/jenkins
 ```
-root@6ddfb62a5b8d:/# notary -s https://172.28.128.11 -d /var/jenkins_home/.docker/trust delegation add \
+root@6ddfb62a5b8d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 delegation add \
   172.28.128.11/engineering/docker-node-app targets/releases --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /var/jenkins_home/.docker/trust delegation add \   
+root@6ddfb62a5b8d/: notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 delegation add \   
   172.28.128.11/engineering/docker-node-app targets/jenkins --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-root@6ddfb62a5b8d/: notary -s https://172.28.128.11 -d /var/jenkins_home/.docker/trust publish \    
+root@6ddfb62a5b8d/: notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 publish \
   172.28.128.11/engineering/docker-node-app
 ```
 
