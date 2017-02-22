@@ -85,13 +85,18 @@ sudo more jenkins/secrets/initialAdminPassword
 #### Create repo in DTR to push images. Otherwise authentication to DTR will fail on build.
 ![Repo](images/repo.png?raw=true)
 
-#### Initialize notary on repository
-Run `notary key import` and `notary init` on the newly created repo `docker-node-app` within jenkins container
+#### Import private key from ucp bundle using notary
+Run `notary key import` within jenkins container
 ```
 root@09a07f72010d:/# sudo su - jenkins
 root@09a07f72010d:/# notary -d /home/jenkins/.docker/trust key import /home/jenkins/ucp-bundle-admin/key.pem
 Enter passphrase for new delegation key with ID 4906f54 (tuf_keys):
 Repeat passphrase for new delegation key with ID 4906f54 (tuf_keys):
+```
+
+#### Initialize repository on notary
+Run `notary init` on the newly created repo `docker-node-app` within jenkins container
+```
 root@09a07f72010d:/# notary -d /home/jenkins/.docker/trust -s https://172.28.128.11 init 172.28.128.11/engineering/docker-node-app
 Root key found, using: c47333b8b15fe43a6abc59dcb29f4e60dee1807919dfc05f6e57dbfc57553d88
 Enter passphrase for root key with ID c47333b:
