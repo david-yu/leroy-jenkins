@@ -58,10 +58,10 @@ cp -r /vagrant/scripts/ /home/ubuntu/scripts
 ```
 docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080 \
   --mount type=bind,source=/home/ubuntu/jenkins,destination=/var/jenkins_home \
+  --mount type=bind,source=/home/ubuntu/notary-config/.docker/trust,destination=/root/.docker/trust \
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/bin/docker,destination=/usr/bin/docker \
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
-  --mount type=bind,source=/etc/docker/certs.d,destination=/etc/docker/certs.d \
   --mount type=bind,source=/home/ubuntu/scripts,destination=/home/jenkins/scripts \
   --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
   --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
