@@ -61,6 +61,7 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/bin/docker,destination=/usr/bin/docker \
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
+  --mount type=bind,source=/etc/docker/certs.d,destination=/etc/docker/certs.d \
   --mount type=bind,source=/home/ubuntu/scripts,destination=/home/jenkins/scripts \
   --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
   --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
@@ -111,12 +112,21 @@ Enter password:
 ```
 root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 key rotate \
   172.28.128.11/engineering/docker-node-app snapshot -r
+  Enter username: admin
+  Enter password:
+  Enter passphrase for root key with ID be231c8:
+  Enter passphrase for targets key with ID 43d1a93:
+  Successfully rotated snapshot key for repository 172.28.128.11/engineering/docker-node-app
 ```
 
 #### Publish changes
 ```
 root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust publish -s https://172.28.128.11  \
   172.28.128.11/engineering/docker-node-app
+  Pushing changes to 172.28.128.11/engineering/docker-node-app
+  Enter username: admin
+  Enter password:
+  Successfully published changes for repository 172.28.128.11/engineering/docker-node-app
 ```
 
 #### Add delegation for targets/releases and targets/jenkins
@@ -124,11 +134,16 @@ root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust publish -s https:
 root@6ddfb62a5b8d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 delegation add \
   172.28.128.11/engineering/docker-node-app targets/releases --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-root@6ddfb62a5b8d/: notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 delegation add \   
+root@6ddfb62a5b8d/: notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 delegation add \
   172.28.128.11/engineering/docker-node-app targets/jenkins --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
 root@6ddfb62a5b8d/: notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 publish \
   172.28.128.11/engineering/docker-node-app
+  Pushing changes to 172.28.128.11/engineering/docker-node-app
+  Enter username: admin
+  Enter password:
+  Enter passphrase for targets key with ID 43d1a93:
+  Successfully published changes for repository 172.28.128.11/engineering/docker-node-app
 ```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
