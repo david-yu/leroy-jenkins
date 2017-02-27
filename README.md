@@ -161,8 +161,7 @@ notary -s https://172.28.128.11 -d ~/.docker/trust delegation list 172.28.128.11
 #### Additional commands if needing to start over
 Delete repo from notary server:
 ```
-notary -d ~/.docker/trust -s https://172.28.128.11 delete 172.28.128.11/engineering/docker-node-app
-notary -d ~/.docker/trust publish -s https://172.28.128.11 172.28.128.11/engineering/docker-node-app
+notary -d ~/.docker/trust -s https://172.28.128.11 delete 172.28.128.11/engineering/docker-node-app --remote
 ```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
