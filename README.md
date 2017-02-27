@@ -183,6 +183,9 @@ https://github.com/yongshin/docker-node-app.git
 #!/bin/bash
 export DTR_IPADDR=172.28.128.11
 export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=docker123
+export DOCKER_TLS_VERIFY=1
+export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
+export DOCKER_HOST=tcp://ucp.local:443
 docker build -t ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} .
 docker tag ${DTR_IPADDR}/engineering/docker-node-app:1.${BUILD_NUMBER} ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker login -u admin -p dockeradmin ${DTR_IPADDR}
