@@ -89,7 +89,7 @@ sudo more jenkins/secrets/initialAdminPassword
 #### Import private key from ucp bundle using notary
 Run `notary key import` within jenkins container
 ```
-root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust key import /home/jenkins/ucp-bundle-admin/key.pem
+root@09a07f72010d:/# notary -d ~/.docker/trust key import /home/jenkins/ucp-bundle-admin/key.pem
 Enter passphrase for new delegation key with ID 4906f54 (tuf_keys):
 Repeat passphrase for new delegation key with ID 4906f54 (tuf_keys):
 ```
@@ -97,7 +97,7 @@ Repeat passphrase for new delegation key with ID 4906f54 (tuf_keys):
 #### Initialize repository on notary
 Run `notary init` on the newly created repo `docker-node-app` within jenkins container
 ```
-root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 init 172.28.128.11/engineering/docker-node-app
+root@09a07f72010d:/# notary -d ~/.docker/trust -s https://172.28.128.11 init 172.28.128.11/engineering/docker-node-app
 Root key found, using: c47333b8b15fe43a6abc59dcb29f4e60dee1807919dfc05f6e57dbfc57553d88
 Enter passphrase for root key with ID c47333b:
 Enter passphrase for new targets key with ID 8e7009a (172.28.128.4/engineering/docker-node-app):
@@ -110,7 +110,7 @@ Enter password:
 
 #### Rotate key to notary server
 ```
-root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 key rotate \
+root@09a07f72010d:/# notary -d ~/.docker/trust -s https://172.28.128.11 key rotate \
   172.28.128.11/engineering/docker-node-app snapshot -r
   Enter username: admin
   Enter password:
@@ -121,7 +121,7 @@ root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28
 
 #### Publish changes
 ```
-root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust publish -s https://172.28.128.11  \
+root@09a07f72010d:/# notary -d ~/.docker/trust publish -s https://172.28.128.11  \
   172.28.128.11/engineering/docker-node-app
   Pushing changes to 172.28.128.11/engineering/docker-node-app
   Enter username: admin
@@ -131,19 +131,31 @@ root@09a07f72010d:/# notary -d /var/jenkins_home/.docker/trust publish -s https:
 
 #### Add delegation for targets/releases and targets/jenkins
 ```
-root@6ddfb62a5b8d:/# notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 delegation add \
+root@6ddfb62a5b8d:/# notary -d ~/.docker/trust -s https://172.28.128.11 delegation add \
   172.28.128.11/engineering/docker-node-app targets/releases --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-root@6ddfb62a5b8d/: notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 delegation add \
+root@6ddfb62a5b8d/: notary -d ~/.docker/trust -s https://172.28.128.11 delegation add \
   172.28.128.11/engineering/docker-node-app targets/jenkins --all-paths /home/jenkins/ucp-bundle-admin/cert.pem
 
-root@6ddfb62a5b8d/: notary -d /var/jenkins_home/.docker/trust -s https://172.28.128.11 publish \
+root@6ddfb62a5b8d/: notary -d ~/.docker/trust -s https://172.28.128.11 publish \
   172.28.128.11/engineering/docker-node-app
   Pushing changes to 172.28.128.11/engineering/docker-node-app
   Enter username: admin
   Enter password:
   Enter passphrase for targets key with ID 43d1a93:
   Successfully published changes for repository 172.28.128.11/engineering/docker-node-app
+```
+
+#### Check Notary Local Keys
+Make sure your delegation key is here
+```
+notary -d ~/.docker/trust key list
+```
+
+#### Check Notary Notary Delegations
+Also make sure your delegations are setup
+```
+notary -s https://172.28.128.11 -d ~/.docker/trust delegation list 172.28.128.11/engineering/docker-node-app
 ```
 
 #### Create 'docker build and push' Free-Style Jenkins Job
