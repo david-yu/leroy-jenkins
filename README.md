@@ -211,7 +211,7 @@ https://github.com/yongshin/docker-node-app.git
 export DTR_IPADDR=172.28.128.11
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
-export DOCKER_HOST=tcp://172.28.128.5:443
+export DOCKER_HOST=tcp://ucp.local:443
 docker login -u admin -p dockeradmin ${DTR_IPADDR}
 docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
