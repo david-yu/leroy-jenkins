@@ -1,12 +1,17 @@
 # leroy-jenkins
 
-This repo contains is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker DataCenter for Engine 1.13.
+This repo contains is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker EE Standard and Advanced.
 
 ## Provision node to run Jenkins on
 
-#### Install CS Engine on Node
+#### Install Docker EE on the Node
 ```
-curl -fsSL https://packages.docker.com/1.13/install.sh | sh
+export DOCKER_EE_URL=$(cat /home/ubuntu/ee_url)
+sudo curl -fsSL ${DOCKER_EE_URL}/gpg | sudo apt-key add
+sudo add-apt-repository "deb [arch=amd64] ${DOCKER_EE_URL} $(lsb_release -cs) stable-17.03"
+sudo apt-get update
+sudo apt-get -y install docker-ee
+sudo usermod -aG docker ubuntu
 ```
 
 #### Join Node to Docker Swarm
@@ -21,7 +26,7 @@ mkdir jenkins
 
 #### Create Node label on Docker Engine
 ```
-docker node update --label-add jenkins master
+docker node update --label-add jenkins=master worker-node2
 ```
 
 #### Install DTR CA on Node as well as all Nodes inside of UCP Swarm (if using self-signed certs)
