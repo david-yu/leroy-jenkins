@@ -73,17 +73,17 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --constraint 'node.labels.jenkins == master' yongshin/leroy-jenkins
 ```
 
+#### Copy password from jenkins folder on Node
+Run this inside of node
+```
+sudo more jenkins/secrets/initialAdminPassword
+```
+
 #### Have Jenkins trust the DTR CA (if using self-signed certs)
 Run this inside of Jenkins container, mounted from a volume as shown above, the contents of the file are here: [trust-dtr.sh](https://github.com/yongshin/vagrant-vancouver/blob/master/scripts/trust-dtr.sh)
 ```
 export DTR_IPADDR=172.28.128.11
 ./home/jenkins/scripts/trust-dtr.sh
-```
-
-#### Copy password from jenkins folder on Node
-Run this inside of node
-```
-sudo more jenkins/secrets/initialAdminPassword
 ```
 
 ### Setup Docker Build and Push to DTR Jenkins Job
