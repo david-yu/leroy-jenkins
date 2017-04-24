@@ -224,3 +224,39 @@ docker pull clusterhq/mongodb
 docker stack rm nodeapp
 docker stack deploy -c docker-compose.yml nodeapp
 ```
+
+### Setup Docker Deploy Trusted Images Job (Optional)
+
+#### Add Build Step -> Execute Shell
+```
+#!/bin/bash
+export DTR_IPADDR=172.28.128.11
+export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=docker123
+export DOCKER_TLS_VERIFY=1
+export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
+export DOCKER_HOST=tcp://ucp.local:443
+docker pull mongo
+docker pull wordpress
+docker pull mariadb
+docker tag mongo ${DTR_IPADDR}/engineering/mongo:latest
+docker tag wordpress ${DTR_IPADDR}/engineering/wordpress:latest
+docker tag mariadb ${DTR_IPADDR}/engineering/mariadb:latest
+# create repositories
+createRepo() {
+	REPO_NAME=$1
+    curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
+  --user admin:dockeradmin -d "{
+    \"name\": \"${REPO_NAME}\",
+    \"shortDescription\": \"\",
+    \"longDescription\": \"\",
+    \"visibility\": \"public\"}" \
+  "https://${DTR_IPADDR}/api/v0/repositories/engineering"
+}
+createRepo mongo
+createRepo wordpress
+createRepo mariadb
+# push signed images
+docker push ${DTR_IPADDR}/engineering/mongo:latest
+docker push ${DTR_IPADDR}/engineering/wordpress:latest
+docker push ${DTR_IPADDR}/engineering/mariadb:latest
+```
