@@ -235,15 +235,21 @@ export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOC
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
 export DOCKER_HOST=tcp://ucp.local:443
-docker pull mongo
-docker pull wordpress
-docker pull mariadb
-docker tag mongo ${DTR_IPADDR}/engineering/mongo:latest
-docker tag wordpress ${DTR_IPADDR}/engineering/wordpress:latest
-docker tag mariadb ${DTR_IPADDR}/engineering/mariadb:latest
+# create organizations
+createOrg() {
+	ORG_NAME=$1
+	curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
+    --user admin:dockeradmin -d "{
+      \"isOrg\": \"true\",
+      \"name\": \"${ORG_NAME}\"}" \
+    "https://${DTR_IPADDR}/api/v0/accounts"
+}
+createOrg engineering
+createOrg infrastructure
 # create repositories
 createRepo() {
 	REPO_NAME=$1
+    ORG_NAME=$2
     curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
   --user admin:dockeradmin -d "{
     \"name\": \"${REPO_NAME}\",
@@ -252,11 +258,23 @@ createRepo() {
     \"visibility\": \"public\"}" \
   "https://${DTR_IPADDR}/api/v0/repositories/engineering"
 }
-createRepo mongo
-createRepo wordpress
-createRepo mariadb
+createRepo mongo engineering
+createRepo wordpress engineering
+createRepo mariadb engineering
+createRepo leroy-jenkins infrastructure
+# pull images from hub
+docker pull mongo
+docker pull wordpress
+docker pull mariadb
+# tag images
+docker tag mongo ${DTR_IPADDR}/engineering/mongo:latest
+docker tag wordpress ${DTR_IPADDR}/engineering/wordpress:latest
+docker tag mariadb ${DTR_IPADDR}/engineering/mariadb:latest
+# build custom images
+docker build -t ${DTR_IPADDR}/infrastructure/leroy-jenkins .
 # push signed images
 docker push ${DTR_IPADDR}/engineering/mongo:latest
 docker push ${DTR_IPADDR}/engineering/wordpress:latest
 docker push ${DTR_IPADDR}/engineering/mariadb:latest
+docker push ${DTR_IPADDR}/infrastructure/leroy-jenkins
 ```
