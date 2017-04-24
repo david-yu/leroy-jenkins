@@ -240,15 +240,15 @@ createOrg() {
 	ORG_NAME=$1
 	curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
     --user admin:dockeradmin -d "{
-      \"isOrg\": \"true\",
+      \"isOrg\": true,
       \"name\": \"${ORG_NAME}\"}" \
-    "https://${DTR_IPADDR}/api/v0/accounts"
+    "https://${DTR_IPADDR}/enzi/v0/accounts"
 }
 createOrg engineering
 createOrg infrastructure
 # create repositories
 createRepo() {
-	REPO_NAME=$1
+	  REPO_NAME=$1
     ORG_NAME=$2
     curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
   --user admin:dockeradmin -d "{
@@ -256,7 +256,7 @@ createRepo() {
     \"shortDescription\": \"\",
     \"longDescription\": \"\",
     \"visibility\": \"public\"}" \
-  "https://${DTR_IPADDR}/api/v0/repositories/engineering"
+  "https://${DTR_IPADDR}/api/v0/repositories/${ORG_NAME}"
 }
 createRepo mongo engineering
 createRepo wordpress engineering
