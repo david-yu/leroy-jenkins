@@ -266,15 +266,16 @@ createRepo leroy-jenkins infrastructure
 docker pull mongo
 docker pull wordpress
 docker pull mariadb
+# build custom images
+docker build -t leroy-jenkins .
 # tag images
 docker tag mongo ${DTR_IPADDR}/engineering/mongo:latest
 docker tag wordpress ${DTR_IPADDR}/engineering/wordpress:latest
 docker tag mariadb ${DTR_IPADDR}/engineering/mariadb:latest
-# build custom images
-docker build -t ${DTR_IPADDR}/infrastructure/leroy-jenkins .
+docker tag leroy-jenkins ${DTR_IPADDR}/infrastructure/leroy-jenkins:latest
 # push signed images
 docker push ${DTR_IPADDR}/engineering/mongo:latest
 docker push ${DTR_IPADDR}/engineering/wordpress:latest
 docker push ${DTR_IPADDR}/engineering/mariadb:latest
-docker push ${DTR_IPADDR}/infrastructure/leroy-jenkins
+docker push ${DTR_IPADDR}/infrastructure/leroy-jenkins:latest
 ```
