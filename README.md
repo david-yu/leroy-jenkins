@@ -235,6 +235,23 @@ export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=docker123 DOC
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
 export DOCKER_HOST=tcp://ucp.local:443
+# create users
+createUser() {
+	USER_NAME=$1
+    FULL_NAME=$2
+	curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
+    --user admin:dockeradmin -d "{
+      \"isOrg\": false,
+      \"isAdmin\": false,
+      \"isActive\": true,
+      \"fullName\": \"${FULL_NAME}\",
+      \"name\": \"${USER_NAME}\",
+      \"password\": \"docker123\"}" \
+    "https://${DTR_IPADDR}/enzi/v0/accounts"
+}
+createUser david 'David Yu'
+createUser solomon 'Solomon Hykes'
+createUser banjot 'Banjot Chanana'
 # create organizations
 createOrg() {
 	ORG_NAME=$1
@@ -242,13 +259,13 @@ createOrg() {
     --user admin:dockeradmin -d "{
       \"isOrg\": true,
       \"name\": \"${ORG_NAME}\"}" \
-    "https://${DTR_IPADDR}/enzi/v0/accounts"
+      "https://${DTR_IPADDR}/enzi/v0/accounts"
 }
 createOrg engineering
 createOrg infrastructure
 # create repositories
 createRepo() {
-	  REPO_NAME=$1
+    REPO_NAME=$1
     ORG_NAME=$2
     curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
   --user admin:dockeradmin -d "{
