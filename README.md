@@ -58,7 +58,7 @@ source env.sh
 cp -r /vagrant/scripts/ /home/ubuntu/scripts
 ```
 
-#### Start Jenkins by mapping the Jenkins workspace, Docker binary, Notary and exposing the Docker daemon socket to the container:
+#### Start Jenkins by mapping the Jenkins workspace, Docker binary, Notary and exposing the Docker daemon socket to the container (remove volumes you do not wish to mount otherwise the command will not work):
 
 ```
 docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080 \
@@ -267,6 +267,11 @@ createOrg infrastructure
 createRepo() {
     REPO_NAME=$1
     ORG_NAME=$2
+    NOTARY_ROOT_PASSPHRASE="docker123"
+    NOTARY_TARGETS_PASSPHRASE="docker123"
+    NOTARY_SNAPSHOT_PASSPHRASE="docker123"
+    NOTARY_DELEGATION_PASSPHRASE="docker123"
+    NOTARY_OPTS="-s https://${DTR_URL} -d ${HOME}/.docker/trust"
     curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
   --user admin:dockeradmin -d "{
     \"name\": \"${REPO_NAME}\",
