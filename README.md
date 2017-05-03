@@ -219,6 +219,7 @@ export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH="/home/jenkins/ucp-bundle-admin"
 export DOCKER_HOST=tcp://ucp.local:443
 docker login -u admin -p dockeradmin ${DTR_IPADDR}
+docker rmi ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
 docker stack rm nodeapp
