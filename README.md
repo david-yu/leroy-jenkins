@@ -223,6 +223,7 @@ docker rmi ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
 docker stack rm nodeapp
+sleep 5
 docker stack deploy -c docker-compose.yml nodeapp
 ```
 
