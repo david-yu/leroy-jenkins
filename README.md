@@ -220,9 +220,9 @@ docker login -u admin -p dockeradmin ${DTR_IPADDR}
 docker rmi ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
-docker stack rm nodeapp
-sleep 5
-docker stack deploy -c docker-compose.yml nodeapp
+docker service update --image ${DTR_IPADDR}/engineering/docker-node-app:latest nodeapp_app
+# run to deploy stack first 
+# docker stack deploy -c docker-compose.yml nodeapp
 ```
 
 ### Setup Docker Deploy Trusted Images Job (Optional)
