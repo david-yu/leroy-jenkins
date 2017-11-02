@@ -24,11 +24,6 @@ docker swarm join --token ${SWARM_TOKEN} ${SWARM_MANAGER}:2377
 mkdir jenkins
 ```
 
-#### Create Node label on Docker Engine
-```
-docker node update --label-add jenkins=master worker-node2
-```
-
 #### Install DTR CA on Node as well as all Nodes inside of UCP Swarm (if using self-signed certs)
 ```
 export DTR_IPADDR=$(cat /vagrant/dtr-vancouver-node1-ipaddr)
@@ -64,7 +59,7 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
   --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
   --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
-  --constraint 'node.labels.jenkins == master' yongshin/leroy-jenkins
+  --constraint node.hostname==engine04 yongshin/leroy-jenkins
 ```
 
 #### Copy password from jenkins folder on Node
