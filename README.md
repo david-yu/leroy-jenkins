@@ -212,7 +212,7 @@ docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
 docker service update --image ${DTR_IPADDR}/engineering/docker-node-app:latest nodeapp_app
 # run to deploy stack first
-# docker stack deploy -c docker-compose.yml nodeapp
+# docker stack deploy -c docker-compose-demo.yml nodeapp
 ```
 
 ### Setup Docker Deploy Trusted Images Job (Optional)
