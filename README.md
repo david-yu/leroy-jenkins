@@ -8,7 +8,7 @@ This repo contains is a set of instructions to get you started on running Jenkin
 ```
 export DOCKER_EE_URL=$(cat /home/ubuntu/ee_url)
 sudo curl -fsSL ${DOCKER_EE_URL}/gpg | sudo apt-key add
-sudo add-apt-repository "deb [arch=amd64] ${DOCKER_EE_URL} $(lsb_release -cs) stable-17.03"
+sudo add-apt-repository "deb [arch=amd64] ${DOCKER_EE_URL} $(lsb_release -cs) stable-17.06"
 sudo apt-get update
 sudo apt-get -y install docker-ee
 sudo usermod -aG docker ubuntu
@@ -74,7 +74,7 @@ sudo more jenkins/secrets/initialAdminPassword
 ```
 
 #### Have Jenkins trust the DTR CA (if using self-signed certs)
-Run this inside of Jenkins container: 
+Run this inside of Jenkins container:
 ```
 export DTR_IPADDR=172.28.128.11
 openssl s_client -connect ${DTR_IPADDR}:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM | sudo tee /usr/local/share/ca-certificates/${DTR_IPADDR}.crt
