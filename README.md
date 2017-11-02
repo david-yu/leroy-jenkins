@@ -53,11 +53,6 @@ cd ucp-bundle-admin
 source env.sh
 ```
 
-#### Copy scripts folder that includes `trust-dtr.sh` script, provided by [vagrant-vancouver](https://github.com/yongshin/vagrant-vancouver)
-```
-cp -r /vagrant/scripts/ /home/ubuntu/scripts
-```
-
 #### Start Jenkins by mapping the Jenkins workspace, Docker binary, Notary and exposing the Docker daemon socket to the container (remove volumes you do not wish to mount otherwise the command will not work):
 
 ```
@@ -67,7 +62,6 @@ docker service create --name leroy-jenkins --network ucp-hrm --publish 8080:8080
   --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
   --mount type=bind,source=/usr/bin/docker,destination=/usr/bin/docker \
   --mount type=bind,source=/home/ubuntu/ucp-bundle-admin,destination=/home/jenkins/ucp-bundle-admin \
-  --mount type=bind,source=/home/ubuntu/scripts,destination=/home/jenkins/scripts \
   --mount type=bind,source=/home/ubuntu/notary,destination=/usr/local/bin/notary \
   --label com.docker.ucp.mesh.http.8080=external_route=http://jenkins.local,internal_port=8080 \
   --constraint 'node.labels.jenkins == master' yongshin/leroy-jenkins
@@ -80,10 +74,11 @@ sudo more jenkins/secrets/initialAdminPassword
 ```
 
 #### Have Jenkins trust the DTR CA (if using self-signed certs)
-Run this inside of Jenkins container, mounted from a volume as shown above, the contents of the file are here: [trust-dtr.sh](https://github.com/yongshin/vagrant-vancouver/blob/master/scripts/trust-dtr.sh)
+Run this inside of Jenkins container: 
 ```
 export DTR_IPADDR=172.28.128.11
-./home/jenkins/scripts/trust-dtr.sh
+openssl s_client -connect ${DTR_IPADDR}:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM | sudo tee /usr/local/share/ca-certificates/${DTR_IPADDR}.crt
+sudo update-ca-certificates
 ```
 
 ### Setup Docker Build and Push to DTR Jenkins Job
@@ -221,7 +216,7 @@ docker rmi ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull ${DTR_IPADDR}/engineering/docker-node-app:latest
 docker pull clusterhq/mongodb
 docker service update --image ${DTR_IPADDR}/engineering/docker-node-app:latest nodeapp_app
-# run to deploy stack first 
+# run to deploy stack first
 # docker stack deploy -c docker-compose.yml nodeapp
 ```
 
