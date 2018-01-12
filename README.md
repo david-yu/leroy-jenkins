@@ -10,7 +10,7 @@ RUN apt-get update \
    && rm -rf /var/lib/apt/lists/*
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 ENV DTR_IPADDR=${DTR_IP_OR_URI}
-RUN curl -k https://${DTR_IP_OR_URI}/ca -o /usr/local/share/ca-certificates/dtr.docker.ee.crt \
+RUN curl -k https://${DTR_IP_OR_URI}/ca -o /usr/local/share/ca-certificates/ca.crt \
    && update-ca-certificates \
    && mkdir -p /etc/ssl/ucp_bundle
 ADD ucp_bundle /etc/ssl/ucp_bundle/
@@ -19,6 +19,16 @@ ADD ucp_bundle /etc/ssl/ucp_bundle/
 Here reference jenkins' repo for the lts (long-term-supported) image and compile in updates and packages required for Jenkins. A cucial step is to add jenkins to the sudoers file so that running the following commands will be possible. Lets add DTR's IP (x.x.x.x) or URI (dtr.domain.com) to the environment (optional) and curl in the CA certificate, we'll also transfer in a client bundle.  That's pretty much it, next we'll have to setup our NFS mounts and configure our service in UCP.
 
 ## The NFS setup
+I'll assume you know how to setup a NFS server and I'll skip right to the Docker configuration.
+
+I couldn't figure out the syntax to create NFS volumes in UCP, so I created them manually on every worker node.
+```
+docker volume create --driver local --opt type=nfs --opt o=addr=${NFS_IP},rw --opt device=:/nfs/volumes/jenkins_home jenkins_home
+```
+I also wanted a NFS build directory so that running the docker commands could occur from the jenkins container outside of needlessly eatting up storage on the worker nodes.
+```
+docker volume create --driver local --opt type=nfs --opt o=addr=172.16.1.5,rw --opt device=:/nfs/builds build_dir
+```
 
 
 
