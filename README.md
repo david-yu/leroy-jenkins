@@ -1,7 +1,7 @@
 # Added Section - Jenkings in a container with NFS
 ***
 ## The Dockerfile
-
+```
    FROM jenkins/jenkins:lts
    USER root
    RUN apt-get update \
@@ -14,7 +14,7 @@
      && update-ca-certificates \
      && mkdir -p /etc/ssl/ucp_bundle
   ADD ucp_bundle /etc/ssl/ucp_bundle/
-
+```
 Here reference jenkins' repo for the lts (long-term-supported) image and compile in updates and packages required for Jenkins. A cucial step is to add jenkins to the sudoers file so that running the following commands will be possible. Lets add DTR's IP (x.x.x.x) or URI (dtr.domain.com) to the environment (optional) and curl in the CA certificate, we'll also transfer in a client bundle.  That's pretty much it, next we'll have to setup our NFS mounts and configure our service in UCP.
 
 ## The NFS setup
