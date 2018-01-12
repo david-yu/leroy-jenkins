@@ -45,7 +45,8 @@ Not pictured here, but very important is to select your "ucp-hrm" network.
 ![Docker](images/docker.png?raw=true)
 
 #### Jenkins example
-![Jenkins](images/jenkins_script.png?raw=true)
+![Jenkins](images/myjenkins.png?raw=true)
+I wanted to make sure that every build is really clean, so I remove the build directory and re-pull from githup each time... granted, this step isn't likely nessassary since it could just update... but hey, I'm just playing.
 
 # To-Be-Documented
 1. Updating the inital admin password for Jenkins (see the below section for this); however, since jenkins is on NFS now the password and plugins only need to be set once.
