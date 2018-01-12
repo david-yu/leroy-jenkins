@@ -1,4 +1,4 @@
-# Added Section - Jenkings in a container with NFS
+# Jenkings in a container with NFS (Added Section)
 ***
 ## The Dockerfile
 ```
@@ -18,6 +18,11 @@ ADD ucp_bundle /etc/ssl/ucp_bundle/
 
 Here reference jenkins' repo for the lts (long-term-supported) image and compile in updates and packages required for Jenkins. A cucial step is to add jenkins to the sudoers file so that running the following commands will be possible. Lets add DTR's IP (x.x.x.x) or URI (dtr.domain.com) to the environment (optional) and curl in the CA certificate, we'll also transfer in a client bundle.  That's pretty much it, next we'll have to setup our NFS mounts and configure our service in UCP.
 
+```
+docker build -t dtr.domain.com/repo/jenkins:tag .
+docker push dtr.domain.com/repo/jenkins:tag
+```
+
 ## The NFS setup
 I'll assume you know how to setup a NFS server and I'll skip right to the Docker configuration.
 
@@ -29,6 +34,7 @@ I also wanted a NFS build directory so that running the docker commands could oc
 ```
 docker volume create --driver local --opt type=nfs --opt o=addr=172.16.1.5,rw --opt device=:/nfs/builds build_dir
 ```
+In UCP I created a new service for Jenkins
 
 
 
