@@ -44,6 +44,9 @@ Not pictured here, but very important is to select your "ucp-hrm" network.
 #### Then I configured the NFS volumes and some bind mounts for the docker engine (for running docker commands).
 ![Docker](images/docker.png?raw=true)
 
+#### Jenkins example
+![Jenkins](images/jenkins_script.png?raw=true)
+
 # To-Be-Documented
 1. Updating the inital admin password for Jenkins (see the below section for this); however, since jenkins is on NFS now the password and plugins only need to be set once.
 2. Running a test with jenkins to verify it's working
