@@ -34,13 +34,13 @@ I also wanted a NFS build directory so that running the docker commands could oc
 ```
 docker volume create --driver local --opt type=nfs --opt o=addr=172.16.1.5,rw --opt device=:/nfs/builds build_dir
 ```
-### In UCP I created a new service for Jenkins.
+#### In UCP I created a new service for Jenkins.
 ![Service](images/services.png?raw=true)
 
-### Setup networking and HRM.
+#### Setup networking and HRM.
 ![HRM](images/hrm.png?raw=true)
 
-### Then I configured the NFS volumes and some bind mounts for the docker engine (for running docker commands).
+#### Then I configured the NFS volumes and some bind mounts for the docker engine (for running docker commands).
 ![Docker](images/docker.png?raw=true)
 
 # leroy-jenkins
