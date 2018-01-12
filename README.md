@@ -1,4 +1,4 @@
-# Jenkings in a container with NFS (Added Section)
+# Jenkings in a container with NFS (Additional Section)
 ***
 ## The Dockerfile
 ```
@@ -38,10 +38,15 @@ docker volume create --driver local --opt type=nfs --opt o=addr=172.16.1.5,rw --
 ![Service](images/services.png?raw=true)
 
 #### Setup networking and HRM.
+Not pictured here, but very important is to select your "ucp-hrm" network.
 ![HRM](images/hrm.png?raw=true)
 
 #### Then I configured the NFS volumes and some bind mounts for the docker engine (for running docker commands).
 ![Docker](images/docker.png?raw=true)
+
+# To-Be-Documented
+1. Updating the inital admin password for Jenkins (see the below section for this); however, since jenkins is on NFS now the password and plugins only need to be set once.
+2. Running a test with jenkins to verify it's working
 
 # leroy-jenkins
 
