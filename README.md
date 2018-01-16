@@ -26,7 +26,7 @@ docker push dtr.domain.com/repo/jenkins:tag
 ## The NFS setup
 I'll assume you know how to setup a NFS server and I'll skip right to the Docker configuration.
 
-I couldn't figure out the syntax to create NFS volumes in UCP, so I created them manually on every worker node.
+I couldn't figure out the syntax to create NFS volumes in UCP, so I created them manually on every worker node (thanks Ansible).
 ```
 docker volume create --driver local --opt type=nfs --opt o=addr=${NFS_IP},rw --opt device=:/nfs/volumes/jenkins_home jenkins_home
 ```
