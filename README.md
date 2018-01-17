@@ -52,7 +52,7 @@ I wanted to make sure that every build is really clean, so I remove the build di
 1. Updating the inital admin password for Jenkins (see the below section for this); however, since jenkins is on NFS now the password and plugins only need to be set once.
 2. Running a test with jenkins to verify it's working
 
-# leroy-jenkins
+# leroy-jenkins (The Original)
 
 This repo contains is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker EE Standard and Advanced.
 
