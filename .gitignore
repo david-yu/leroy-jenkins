@@ -1,3 +1,2 @@
-ucp_bundle
-notary*
-.DS*
+_ucp_bundle
+.DS_Store
