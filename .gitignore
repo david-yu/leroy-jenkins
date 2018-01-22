@@ -1,2 +1,4 @@
+# Dont copy my certs
 ucp_bundle/
+# OSX
 .DS_Store
