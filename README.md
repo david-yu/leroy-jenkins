@@ -1,22 +1,29 @@
-# Jenkings in a container with NFS (Additional Section)
+# Jenkings in a container with NFS and Notary (Additional Section)
 ***
 ## The Dockerfile
 ```
 FROM jenkins/jenkins:lts
 USER root
 RUN apt-get update \
-   && apt-get upgrade -y \
-   && apt-get install -y sudo libltdl-dev \
-   && rm -rf /var/lib/apt/lists/*
+	&& apt-get upgrade -y \
+	&& apt-get install -y sudo libltdl-dev \
+	&& rm -rf /var/lib/apt/lists/*
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
-ENV DTR_IPADDR=${DTR_IP_OR_URI}
-RUN curl -k https://${DTR_IP_OR_URI}/ca -o /usr/local/share/ca-certificates/ca.crt \
-   && update-ca-certificates \
-   && mkdir -p /etc/ssl/ucp_bundle
+
+# Set my root's alias string for notary, this will not affect jenkins' user
+RUN echo "alias notary='notary -s https://${DTR_IP_OR_URL} --tlscacert /var/jenkins_home/.docker/ca.crt --trustDir /var/jenkins_home/.docker/trust' >> /root/.bashrc"
+
+ENV DTR_IPADDR=${DTR_IP_OR_URL}
+
+RUN curl -k https://${DTR_IP_OR_URL}/ca -o /usr/local/share/ca-certificates/<dtr.example.com>.crt \
+	&& update-ca-certificates \
+	&& mkdir -p /etc/ssl/ucp_bundle
+
+# Since I've incorporated notary, I'm copying in my user bundle
 ADD ucp_bundle /etc/ssl/ucp_bundle/
 ```
 
-Here reference jenkins' repo for the lts (long-term-supported) image and compile in updates and packages required for Jenkins. A crucial step is to add jenkins to the sudoers file so that running the following commands will be possible. Lets add DTR's IP (x.x.x.x) or URI (dtr.domain.com) to the environment (optional) and/or curl in the CA certificate, we'll also transfer in a client bundle.  That's pretty much it, next we'll have to setup our NFS mounts and configure our service in UCP.
+Here reference jenkins' repo for the lts (long-term-supported) image and compile in updates and packages required for Jenkins. A crucial step is to add jenkins to the sudoers file so that running the following commands will be possible. Lets add DTR's IP (x.x.x.x) or URL (dtr.domain.com) to the environment (optional) and curl in the CA certificate, we'll also transfer in a client bundle.  That's pretty much it, next we'll have to setup our NFS mounts and configure our service in UCP.
 
 ```
 docker build -t dtr.domain.com/repo/jenkins:tag .
@@ -24,33 +31,53 @@ docker push dtr.domain.com/repo/jenkins:tag
 ```
 
 ## The NFS setup
-I'll assume you know how to setup a NFS server and I'll skip right to the Docker configuration.
+On my Ubuntu 16.04 system I configured nfs like so...
 
-I couldn't figure out the syntax to create NFS volumes in UCP, so I created them manually on every worker node (thanks Ansible).
+I've created two directories, one for jenkins_home for it's configuration data and another for jenkins to actually do the docker build commands locally for us.
 ```
-docker volume create --driver local --opt type=nfs --opt o=addr=${NFS_IP},rw --opt device=:/nfs/volumes/jenkins_home jenkins_home
+mkdir -p /nfs/jenkins_home /nfs/jenkins_build
 ```
-I also wanted a NFS build directory so that running the docker commands could occur from the jenkins container outside of needlessly eatting up storage on the worker nodes.
+Next we'll add these to the /etc/exports file and update the nfs service.
 ```
-docker volume create --driver local --opt type=nfs --opt o=addr=172.16.1.5,rw --opt device=:/nfs/builds build_dir
+/etc/exports...
+/nfs/jenkins_home *(rw,sync,no_subtree_check,no_root_squash)
+/nfs/jenkins_build *(rw,sync,no_subtree_check,no_root_squash)
+...
+
+shaker@nfsserver:~$ sudo exportfs -af
+shaker@nfsserver:~$ sudo exportfs
+/nfs/jenkins_home <world>
+/nfs/jenkins_build <world>
 ```
-#### In UCP I created a new service for Jenkins.
-![Service](images/services.png?raw=true)
+### Deploying jenkins
+Now we have our image pushed to our dtr or hub account and we have our nfs server sharing the mount points. We now have to make sure that the nfs clients (apt-get install nfs-common -y) are installed on each node so that mounting the volumes will be possible. We'll also want to ensure that the notary binary is installed on each node as well since we'll be using notary to sign images. I have also desided to leverage the HTTP Routing Mesh (HRM), you'll see this in the docker-compose.yml file. 
 
-#### Setup networking and HRM.
-Not pictured here, but very important is to select your "ucp-hrm" network.
-![HRM](images/hrm.png?raw=true)
+I'm not going to cover notary right now since I expect the process to be updated in the near future, but having access to the notary binary in advance will help you add that functionality if you so desire.
 
-#### Then I configured the NFS volumes and some bind mounts for the docker engine (for running docker commands).
-![Docker](images/docker.png?raw=true)
+Notary binary's may be located here: https://github.com/theupdateframework/notary/releases
 
-#### Jenkins example
-![Jenkins](images/myjenkins.png?raw=true)
-I wanted to make sure that every build is really clean, so I remove the build directory and re-pull from githup each time... granted, this step isn't likely necessary since it could just updated... but hey, I'm just playing.
+```
+shaker@linux3:~$ sudo curl -k https://github.com/theupdateframework/notary/releases/download/v0.6.0/notary-Linux-amd64 -o /usr/bin/notary ; chmod +x /usr/bin/notary
+```
+The only remaining step is to deploy the docker-compose.yml file... Here I've loaded my docker client bundle for admin, so I'll deploy it.
 
-# To-Be-Documented
-1. Updating the initial admin password for Jenkins (see the below section for this); however, since jenkins is on NFS now the password and plugins only need to be set once.
-2. Running a test with jenkins to verify it's working
+```
+DockerMac:leroy-jenkins $ docker stack deploy -c ee.docker-compose.yml myjenkins
+Creating service myjenkins_jenkins
+DockerMac:leroy-jenkins $ 
+
+DockerMac:leroy-jenkins $ docker stack ls
+NAME                SERVICES
+myjenkins           1
+DockerMac:leroy-jenkins $ docker stack ps myjenkins
+ID                  NAME                  IMAGE                            NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
+jjiwk6cw2kzl        myjenkins_jenkins.1   dtr.domain.com/org/jenkins:tag   worker1              Running             Running 4 minutes ago                       
+DockerMac:leroy-jenkins $ 
+```
+
+Visit http://jenkins.domain.com to pull up Jenkin's first login, you can access the initialpassword file directly from the nfs server.
+
+Enjoy!
 
 # leroy-jenkins (The Original)
 

@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   jenkins:
-    image: "dtr.docker.ee/core/jenkins:004"
+    image: "dtr.domain.com/org/jenkins:tag"
     ports:
       - "8080"
     networks:
@@ -10,7 +10,7 @@ services:
       mode: replicated
       replicas: 1
       labels:
-        com.docker.ucp.mesh.http.80-11: "external_route=http://demo.apps.docker.ee,internal_port=8080"
+        com.docker.ucp.mesh.http.80-11: "external_route=http://jenkins.domain.com,internal_port=8080"
     volumes:
       - type: volume
         source: jenkins_home
@@ -41,12 +41,12 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=172.16.1.5,rw
+      o: addr=${NFS_SERVER_IP},rw
       device: ":/nfs/jenkins_home"
 
   jenkins_build:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=172.16.1.5,rw
+      o: addr=${NFS_SERVER_IP},rw
       device: ":/nfs/jenkins_build"
