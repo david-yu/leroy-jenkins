@@ -1,0 +1,52 @@
+version: "3.3"
+services:
+  jenkins:
+    image: "dtr.domain.com/org/jenkins:tag"
+    ports:
+      - "8080"
+    networks:
+      - ucp-hrm
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        com.docker.ucp.mesh.http.80-11: "external_route=http://jenkins.domain.com,internal_port=8080"
+    volumes:
+      - type: volume
+        source: jenkins_home
+        target: /var/jenkins_home
+      - type: volume
+        source: jenkins_build
+        target: /var/jenkins_build
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+      - type: bind
+        source: /usr/bin/docker
+        target: /usr/bin/docker
+        read_only: true
+      - type: bind
+        source: /usr/bin/notary
+        target: /usr/bin/notary
+        read_only: true
+
+
+networks:
+  ucp-hrm:
+    external: true
+
+volumes:
+  jenkins_home:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${NFS_SERVER_IP},rw
+      device: ":/nfs/jenkins_home"
+
+  jenkins_build:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${NFS_SERVER_IP},rw
+      device: ":/nfs/jenkins_build"

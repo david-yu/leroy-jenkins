@@ -1,4 +1,85 @@
-# leroy-jenkins
+# Jenkings in a container with NFS and Notary (Additional Section)
+***
+## The Dockerfile
+```
+FROM jenkins/jenkins:lts
+USER root
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	&& apt-get install -y sudo libltdl-dev \
+	&& rm -rf /var/lib/apt/lists/*
+RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
+
+# Set my root's alias string for notary, this will not affect jenkins' user
+RUN echo "alias notary='notary -s https://${DTR_IP_OR_URL} --tlscacert /var/jenkins_home/.docker/ca.crt --trustDir /var/jenkins_home/.docker/trust' >> /root/.bashrc"
+
+ENV DTR_IPADDR=${DTR_IP_OR_URL}
+
+RUN curl -k https://${DTR_IP_OR_URL}/ca -o /usr/local/share/ca-certificates/<dtr.example.com>.crt \
+	&& update-ca-certificates \
+	&& mkdir -p /etc/ssl/ucp_bundle
+
+# Since I've incorporated notary, I'm copying in my user bundle
+ADD ucp_bundle /etc/ssl/ucp_bundle/
+```
+
+Here reference jenkins' repo for the lts (long-term-supported) image and compile in updates and packages required for Jenkins. A crucial step is to add jenkins to the sudoers file so that running the following commands will be possible. Lets add DTR's IP (x.x.x.x) or URL (dtr.domain.com) to the environment (optional) and curl in the CA certificate, we'll also transfer in a client bundle.  That's pretty much it, next we'll have to setup our NFS mounts and configure our service in UCP.
+
+```
+docker build -t dtr.domain.com/repo/jenkins:tag .
+docker push dtr.domain.com/repo/jenkins:tag
+```
+
+## The NFS setup
+On my Ubuntu 16.04 system I configured nfs like so...
+
+I've created two directories, one for jenkins_home for it's configuration data and another for jenkins to actually do the docker build commands locally for us.
+```
+mkdir -p /nfs/jenkins_home /nfs/jenkins_build
+```
+Next we'll add these to the /etc/exports file and update the nfs service.
+```
+/etc/exports...
+/nfs/jenkins_home *(rw,sync,no_subtree_check,no_root_squash)
+/nfs/jenkins_build *(rw,sync,no_subtree_check,no_root_squash)
+...
+
+shaker@nfsserver:~$ sudo exportfs -af
+shaker@nfsserver:~$ sudo exportfs
+/nfs/jenkins_home <world>
+/nfs/jenkins_build <world>
+```
+### Deploying jenkins
+Now we have our image pushed to our dtr or hub account and we have our nfs server sharing the mount points. We now have to make sure that the nfs clients (apt-get install nfs-common -y) are installed on each node so that mounting the volumes will be possible. We'll also want to ensure that the notary binary is installed on each node as well since we'll be using notary to sign images. I have also desided to leverage the HTTP Routing Mesh (HRM), you'll see this in the docker-compose.yml file. 
+
+I'm not going to cover notary right now since I expect the process to be updated in the near future, but having access to the notary binary in advance will help you add that functionality if you so desire.
+
+Notary binary's may be located here: https://github.com/theupdateframework/notary/releases
+
+```
+shaker@linux3:~$ sudo curl -k https://github.com/theupdateframework/notary/releases/download/v0.6.0/notary-Linux-amd64 -o /usr/bin/notary ; chmod +x /usr/bin/notary
+```
+The only remaining step is to deploy the docker-compose.yml file... Here I've loaded my docker client bundle for admin, so I'll deploy it.
+
+```
+DockerMac:leroy-jenkins $ docker stack deploy -c ee.docker-compose.yml myjenkins
+Creating service myjenkins_jenkins
+DockerMac:leroy-jenkins $ 
+
+DockerMac:leroy-jenkins $ docker stack ls
+NAME                SERVICES
+myjenkins           1
+DockerMac:leroy-jenkins $ docker stack ps myjenkins
+ID                  NAME                  IMAGE                            NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
+jjiwk6cw2kzl        myjenkins_jenkins.1   dtr.domain.com/org/jenkins:tag   worker1              Running             Running 4 minutes ago                       
+DockerMac:leroy-jenkins $ 
+```
+
+Visit http://jenkins.domain.com to pull up Jenkin's first login, you can access the initialpassword file directly from the nfs server.
+
+Enjoy!
+
+# leroy-jenkins (The Original)
 
 This repo contains is a set of instructions to get you started on running Jenkins in a Container and building and deploying applications with Docker EE Standard and Advanced.
 
