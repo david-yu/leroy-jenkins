@@ -17,10 +17,3 @@ RUN curl -k https://dtr.docker.ee/ca -o /usr/local/share/ca-certificates/dtr.doc
 
 # Since I've incorporated notary, I'm copying in my user bundle
 ADD ucp_bundle /etc/ssl/ucp_bundle/
-
-## I've just left these here for notes, while I test a few things
-#Service labels
-#com.docker.ucp.mesh.http.8080-1 / internal_port=8080,external_route=http://jenkins.apps.docker.ee"
-
-#Container Labels
-#com.docker.ucp.mesh.http / true

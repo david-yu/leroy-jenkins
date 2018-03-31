@@ -1,5 +1,6 @@
 # Dont copy my certs
-ucp_bundle/
+*.pem
+env.*
 # OSX
 .DS_Store
 ee.*
