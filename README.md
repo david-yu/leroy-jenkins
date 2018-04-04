@@ -31,7 +31,7 @@ docker build -t dtr.domain.com/repo/jenkins:tag .
 docker push dtr.domain.com/repo/jenkins:tag
 ```
 
-## The NFS setup
+## The NFS server (not a Docker node)
 On an Ubuntu 16.04 system, I configured nfs like so...
 ```
 sudo apt-get install -y nfs-kernel-server
