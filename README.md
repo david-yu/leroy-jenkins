@@ -1,5 +1,4 @@
-# Jenkings in a container with NFS and Notary 
-# (Additional Section)
+# Jenkings in a container with NFS & Notary (optional)
 ***
 ## The Dockerfile
 ```
