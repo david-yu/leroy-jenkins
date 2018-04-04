@@ -7,11 +7,11 @@ RUN apt-get update \
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 # Set my root's alias string for notary, this will not affect jenkins' user
-RUN echo "alias notary='notary -s https://repo.docker.com --trustDir /var/jenkins_home/.docker/trust'" >> /root/.bashrc
+RUN echo "alias notary='notary -s https://dtr.domain.com --trustDir /var/jenkins_home/.docker/trust'" >> /root/.bashrc
 
-ENV DTR_IPADDR=repo.domain.com
+ENV DTR_IPADDR=dtr.domain.com
 
-RUN curl -k https://repo.domain.com/ca -o /usr/local/share/ca-certificates/repo.domain.com.crt \
+RUN curl -k https://dtr.domain.com/ca -o /usr/local/share/ca-certificates/dtr.domain.com.crt \
 	&& update-ca-certificates \
 	&& mkdir -p /etc/ssl/ucp_bundle /var/jenkins_home/.docker
 
