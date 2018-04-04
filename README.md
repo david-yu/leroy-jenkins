@@ -11,7 +11,7 @@ RUN apt-get update \
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 # Set my root's alias string for notary, this will not affect jenkins' user
-RUN echo "alias notary='notary -s https://${DTR_IP_OR_URL} --tlscacert /var/jenkins_home/.docker/ca.crt --trustDir /var/jenkins_home/.docker/trust' >> /root/.bashrc"
+RUN echo "alias notary='notary -s https://${DTR_IP_OR_URL} --trustDir /var/jenkins_home/.docker/trust'" >> /root/.bashrc
 
 ENV DTR_IPADDR=${DTR_IP_OR_URL}
 
