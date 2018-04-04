@@ -32,8 +32,10 @@ docker push dtr.domain.com/repo/jenkins:tag
 ```
 
 ## The NFS setup
-On my Ubuntu 16.04 system I configured nfs like so...
-
+On an Ubuntu 16.04 system, I configured nfs like so...
+```
+sudo apt-get install -y nfs-kernel-server
+```
 I've created two directories, one for jenkins_home for it's configuration data and another for jenkins to actually do the docker build commands locally (from the container) for us.
 ```
 mkdir -p /nfs/jenkins_home /nfs/jenkins_build
@@ -49,6 +51,10 @@ shaker@nfsserver:~$ sudo exportfs -af
 shaker@nfsserver:~$ sudo exportfs
 /nfs/jenkins_home <world>
 /nfs/jenkins_build <world>
+```
+## The NFS clients (all nodes)
+```
+sudo apt-get install -y nfs-common
 ```
 ### Deploying jenkins
 Now we have our image pushed to our DTR or hub account and we have our nfs server sharing the mount points. We now have to make sure that the nfs clients (apt-get install nfs-common -y) are installed on each node so that mounting the volumes will be possible. We'll also want to ensure that the notary binary is installed on each node as well since we'll be using notary to sign images. I have also desided to leverage the HTTP Routing Mesh (HRM), you'll see this in the docker-compose.yml file. 
