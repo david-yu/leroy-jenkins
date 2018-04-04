@@ -55,10 +55,10 @@ Now we have our image pushed to our DTR or hub account and we have our nfs serve
 
 I'm not going to cover notary right now since I expect the process to be updated in the near future, but having access to the notary binary in advance will help you add that functionality if you so desire.
 
-Notary binary's may be located here: https://github.com/theupdateframework/notary/releases
+Notary binary's may be located here: https://github.com/theupdateframework/notary/releases; I have found that version 0.4.3 works best, if you run "notary version" and don't get any results, make sure you're using v0.4.3. Every node that Jenkins may be running on (container) will need the notary binary installed... so, all of them to be safe.
 
 ```
-shaker@worker1:~$ sudo curl -k https://github.com/theupdateframework/notary/releases/download/v0.6.0/notary-Linux-amd64 -o /usr/bin/notary ; chmod +x /usr/bin/notary
+shaker@worker1:~$ sudo curl -k https://github.com/theupdateframework/notary/releases/download/v0.4.3/notary-Linux-amd64 -o /usr/bin/notary ; chmod +x /usr/bin/notary
 ```
 The only remaining step is to deploy the docker-compose.yml file... Here I've loaded my docker client bundle for admin, so I'll deploy it.
 
