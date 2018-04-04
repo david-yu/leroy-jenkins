@@ -76,7 +76,7 @@ jjiwk6cw2kzl        myjenkins_jenkins.1   dtr.domain.com/org/jenkins:tag   worke
 DockerMac:leroy-jenkins $ 
 ```
 
-Visit http://jenkins.domain.com to pull up Jenkin's first login, you can access the initialpassword file directly from the nfs server.
+Visit http://jenkins.domain.com to pull up Jenkin's first login, you can access the initialAdminPassword file directly from the nfs server share. Login with this account, install the common plugins and you should be presented with the configuration page. Don't forget to go back and update your admin password.
 
 ```
 root@nfsserver:~# cat /nfs/jenkins_home/secrets/initialAdminPassword 
