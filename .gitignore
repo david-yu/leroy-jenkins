@@ -1,6 +1,8 @@
 # Dont copy my certs
 *.pem
+*.pub
 env.*
 # OSX
 .DS_Store
 ee.*
+beta_*

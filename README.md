@@ -1,5 +1,5 @@
-# Jenkings in a container with NFS and Notary (Additional Section)
-***
+# Jenkings in a container with NFS & Notary (optional)
+
 ## The Dockerfile
 ```
 FROM jenkins/jenkins:lts
@@ -11,7 +11,7 @@ RUN apt-get update \
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 # Set my root's alias string for notary, this will not affect jenkins' user
-RUN echo "alias notary='notary -s https://${DTR_IP_OR_URL} --tlscacert /var/jenkins_home/.docker/ca.crt --trustDir /var/jenkins_home/.docker/trust' >> /root/.bashrc"
+RUN echo "alias notary='notary -s https://${DTR_IP_OR_URL} --trustDir /var/jenkins_home/.docker/trust'" >> /root/.bashrc
 
 ENV DTR_IPADDR=${DTR_IP_OR_URL}
 
@@ -31,9 +31,11 @@ docker build -t dtr.domain.com/repo/jenkins:tag .
 docker push dtr.domain.com/repo/jenkins:tag
 ```
 
-## The NFS setup
-On my Ubuntu 16.04 system I configured nfs like so...
-
+## The NFS server (not a Docker node)
+On an Ubuntu 16.04 system, I configured nfs like so...
+```
+sudo apt-get install -y nfs-kernel-server
+```
 I've created two directories, one for jenkins_home for it's configuration data and another for jenkins to actually do the docker build commands locally (from the container) for us.
 ```
 mkdir -p /nfs/jenkins_home /nfs/jenkins_build
@@ -50,15 +52,19 @@ shaker@nfsserver:~$ sudo exportfs
 /nfs/jenkins_home <world>
 /nfs/jenkins_build <world>
 ```
+## The NFS clients (all nodes)
+```
+sudo apt-get install -y nfs-common
+```
 ### Deploying jenkins
 Now we have our image pushed to our DTR or hub account and we have our nfs server sharing the mount points. We now have to make sure that the nfs clients (apt-get install nfs-common -y) are installed on each node so that mounting the volumes will be possible. We'll also want to ensure that the notary binary is installed on each node as well since we'll be using notary to sign images. I have also desided to leverage the HTTP Routing Mesh (HRM), you'll see this in the docker-compose.yml file. 
 
 I'm not going to cover notary right now since I expect the process to be updated in the near future, but having access to the notary binary in advance will help you add that functionality if you so desire.
 
-Notary binary's may be located here: https://github.com/theupdateframework/notary/releases
+Notary binary's may be located here: https://github.com/theupdateframework/notary/releases; I have found that version 0.4.3 works best, if you run "notary version" and don't get any results, make sure you're using v0.4.3. Every node that Jenkins may be running on (container) will need the notary binary installed... so, all of them to be safe.
 
 ```
-shaker@worker1:~$ sudo curl -k https://github.com/theupdateframework/notary/releases/download/v0.6.0/notary-Linux-amd64 -o /usr/bin/notary ; chmod +x /usr/bin/notary
+shaker@worker1:~$ sudo curl -k https://github.com/theupdateframework/notary/releases/download/v0.4.3/notary-Linux-amd64 -o /usr/bin/notary ; chmod +x /usr/bin/notary
 ```
 The only remaining step is to deploy the docker-compose.yml file... Here I've loaded my docker client bundle for admin, so I'll deploy it.
 
@@ -76,7 +82,7 @@ jjiwk6cw2kzl        myjenkins_jenkins.1   dtr.domain.com/org/jenkins:tag   worke
 DockerMac:leroy-jenkins $ 
 ```
 
-Visit http://jenkins.domain.com to pull up Jenkin's first login, you can access the initialpassword file directly from the nfs server.
+Visit http://jenkins.domain.com to pull up Jenkin's first login, you can access the initialAdminPassword file directly from the nfs server share. Login with this account, install the common plugins and you should be presented with the configuration page. Don't forget to go back and update your admin password.
 
 ```
 root@nfsserver:~# cat /nfs/jenkins_home/secrets/initialAdminPassword 
