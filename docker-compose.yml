@@ -31,11 +31,11 @@ services:
         target: /usr/bin/notary
         read_only: true
 
-
+# HTTP Routing Mesh Network in Docker EE 
 networks:
   ucp-hrm:
     external: true
-
+# NFS mount to persist jenkins home
 volumes:
   jenkins_home:
     driver: local
@@ -43,7 +43,7 @@ volumes:
       type: nfs
       o: addr=${NFS_SERVER_IP},rw
       device: ":/nfs/jenkins_home"
-
+# NFS mount to persist jenkins' build directory
   jenkins_build:
     driver: local
     driver_opts:
