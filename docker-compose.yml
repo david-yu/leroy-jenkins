@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   jenkins:
-    image: "dtr.domain.com/org/jenkins:tag"
+    image: "shaker242/jenkins:latest"
     ports:
       - "8080"
     networks:
