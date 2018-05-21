@@ -13,7 +13,10 @@ services:
       mode: replicated
       replicas: 1
       labels:
-        com.docker.ucp.mesh.http.80-11: "external_route=http://${JENKINS_DOMCOM},internal_port=8080"
+        # labels for interlock (docker 2.0)
+        com.docker.lb.hosts: jenkins.apps.domain.com
+        com.docker.lb.network: ucp-hrm
+        com.docker.lb.port: "8080"
     volumes:
       - type: volume
         source: jenkins_home
