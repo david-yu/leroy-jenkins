@@ -3,8 +3,8 @@
 version: "3.3"
 services:
   jenkins:
-    build: jenkins
-    #image: dtr.domain.com/apps/jenkins
+    #build: jenkins
+    image: dtr.domain.com/apps/jenkins
     ports:
       - "8080"
     networks:
