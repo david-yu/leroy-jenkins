@@ -1,1 +1,0 @@
-Place your Docker user bundle in this directory.

@@ -6,3 +6,4 @@ env.*
 .DS_Store
 ee.*
 beta_*
+ucp_bundle/*

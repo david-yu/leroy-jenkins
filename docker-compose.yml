@@ -1,7 +1,10 @@
+# Run this compose file to build jenkins/Dockerfile and deploy
+# docker-compose run -e JENKINS_DOMCOM=jenkins.example.com -e NFS_SERVER=10.10.10.15 -e DTR_DOMCOM=dtr.example.com ... 
 version: "3.3"
 services:
   jenkins:
-    image: "dtr.domain.com/org/jenkins:tag"
+    #build: jenkins
+    image: dtr.domain.com/apps/jenkins
     ports:
       - "8080"
     networks:
@@ -10,7 +13,10 @@ services:
       mode: replicated
       replicas: 1
       labels:
-        com.docker.ucp.mesh.http.80-11: "external_route=http://jenkins.domain.com,internal_port=8080"
+        # labels for interlock (docker 2.0)
+        com.docker.lb.hosts: jenkins.apps.domain.com
+        com.docker.lb.network: ucp-hrm
+        com.docker.lb.port: "8080"
     volumes:
       - type: volume
         source: jenkins_home
@@ -30,23 +36,26 @@ services:
         source: /usr/bin/notary
         target: /usr/bin/notary
         read_only: true
+      
 
-
+# HTTP Routing Mesh Network in Docker EE 
 networks:
   ucp-hrm:
     external: true
 
+# NFS mount to persist jenkins home
 volumes:
   jenkins_home:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=${NFS_SERVER_IP},rw
+      o: addr=${NFS_SERVER},rw
       device: ":/nfs/jenkins_home"
 
+# NFS mount to persist jenkins' build directory
   jenkins_build:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=${NFS_SERVER_IP},rw
+      o: addr=${NFS_SERVER},rw
       device: ":/nfs/jenkins_build"
